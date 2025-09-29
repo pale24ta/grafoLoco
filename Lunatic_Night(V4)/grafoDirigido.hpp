@@ -12,7 +12,7 @@ using namespace std;
 
 /*
     GRAFO DIRIGIDO
-    cargar
+    cargar nuevo
     aa
 */
 
