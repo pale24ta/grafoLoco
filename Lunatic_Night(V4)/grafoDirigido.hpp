@@ -12,7 +12,11 @@ using namespace std;
 
 /*
     GRAFO DIRIGIDO
+<<<<<<< HEAD
     cargar nuevo testeo 5
+=======
+    cargar a
+>>>>>>> 091581f (amam)
     aa
 */
 
