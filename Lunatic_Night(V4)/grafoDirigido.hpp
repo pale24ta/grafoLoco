@@ -14,6 +14,8 @@ using namespace std;
     GRAFO DIRIGIDO
 */
 
+// Estamos en Github, profe subame algoritmos 2
+
 template<typename Element>
 class Graph{
     protected:
@@ -39,7 +41,7 @@ class Graph{
         Element getFuente();  // Devuelve el nodo inicial del grafo, es decir el atributo VerticeNode<Element> *g, pero en este caso, su elemento contenido en el 
         bool esVacio();     // Metodo logico si el grafo no tiene nodos // O(1) porque solo se verifica los atributos nVertices
         void addVertice(Element v);   // Anadir una vertice al principio de la vertice apuntada por el apuntador "g" de VerticeNode O(1)
-        
+        void getReverse();  // Invierte los arcos de sentido (v->w a w->v)
         // Nodo: estos dos metodos que tienen virtual estan pensados para reinventarse en la clase hija de grafo, Grafo no dirigido
         virtual void addArco(Element v, Element w, float c);    // Buscar el vertice 'v' en la lista de vertices y agregar un nodo de adyacencia a ese vertice para apuntar el vertice 'w', O(n)
         virtual void addArco(Element v, Element w);             // Crea un arco con peso 1
@@ -228,6 +230,60 @@ void Graph<Element>::addVertice(Element v)
     nVertices += 1; // Sumamos la cantidad
 }
 
+template <typename Element>
+inline void Graph<Element>::getReverse()
+{
+    queue<VerticeNode*> invertidoV,invertidoW;  // Colas para guardar los arcos unicos
+    VerticeNode<Element> *iteradorVertice;  // Para iterar en las vertices del grafo
+    ArcNode<Element> *iterAdy, nuevo, ant;  // Iterar en los nodos de adyacencia, Crear un nuevo arco y memorizar el anterior
+
+    bool existe; // Variable boolean que indica si el arco adyacente ya es habia girado para omitirse
+    iteradorVertice = this->g;  // Comineza desde el nodo inicial
+    iterAdy = NULL;
+    nuevo = NULL;
+
+    // interamos las vertices hasta NULL
+    while(iteradorVertice){
+        // comenzamos a iterar los nodos de adyacencia del vertice v
+        iterAdy = iteradorVertice->getListaAdyacencia();
+        // inicializamos el ant en NULL
+        ant = NULL;
+
+        // iteramos la lista de adyacencia tambien
+        while(iterAdy){
+
+            // existe inicializa en falso
+            existe = false;
+            // Preguntamos si las colas contienen vertices
+            if(!invertidoV.empty() || !invertidoW.empty()){
+
+                // si v y w ya se habian trabajado antes en otra vertice
+                existe = (invertidoV.front() == iterVertice && invertidoW.front() == iterAdy->getInfo());
+            }
+
+            // En caso de haberse trabajado antes
+            if(existe){
+                
+                // solamente desencolamos invertidos y desplazamos ant y iterAdy
+                invertidoV.pop();
+                invertidoW.pop();
+                ant = iterAdy;
+                iterAdy = iterAdy->getProximoNodo();
+            }else{
+                // Aqui adentro haremos el cambio de sentido del arco
+                // asignamos y construimos el nuevo arco
+                nuevo = new ArcNodo<Element>(iteradorVertice);
+
+                // Enlistamos ese arco a la lista de adyacencia de w
+                nuevo->setProximoNodo(iterAdy->getInfo()->getListaAdyacencia())
+            }
+        }
+
+
+
+    }
+
+}
 
 // Inserta un arco con su peso correspondiente a una vertice hacia otra vertice
 template <typename Element>
