@@ -12,7 +12,7 @@ using namespace std;
 
 /*
     GRAFO DIRIGIDO
-    cargar a
+    cargar a testeo 5
     aa
 */
 //testeo samuel 8
