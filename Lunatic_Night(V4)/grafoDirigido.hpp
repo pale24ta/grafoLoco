@@ -17,7 +17,7 @@ using namespace std;
 */
 
 //testeo samuel 3
-// Estamos en Github, profe subame algoritmos 2
+// Estamos en Github, profe subame algoritmos 2 otro cambio
 
 template<typename Element>
 class Graph{
