@@ -16,9 +16,15 @@ using namespace std;
     cargar nuevo testeo 6 s
     aa
 */
+<<<<<<< HEAD
 
 //testeo samuel 3
 // Estamos en Github, profe subame algoritmos 2 otro cambio
+=======
+//testeo samuel 9
+//hola tu papucho
+// Estamos en Github, profe subame algoritmos 2
+>>>>>>> 783a604 (aportacion)
 
 template<typename Element>
 class Graph{
