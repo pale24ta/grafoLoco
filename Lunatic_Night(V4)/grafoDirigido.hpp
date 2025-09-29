@@ -358,7 +358,7 @@ void Graph<Element>::addArco(Element v, Element w, float c)
         }
     }
 
-    // Cargamos el nodo adyacencia
+    // Cargamos el nodo adyacencia/
     nuevoArco->setCosto(c);
     nuevoArco->setInfo(memorizarVertice);
     nuevoArco->setProximoNodo(iterVertices->getListaAdyacencia());  // el nuevo nodo de adyacencia apunta al nodo de la lista de adyacencias de la vertice(en caso de no haber nodos, apunta a NULL)
@@ -548,7 +548,7 @@ float Graph<Element>::getPesoArco(Element v, Element w)  // Encontrar el peso de
         // Apuntamos el primer arco de la lista
         iterAd = iterVer->getListaAdyacencia();
 
-        while(iterAd && iterAd->getInfo()->getInfo() == w)  // Buscar ese arco apuntando
+        while(iterAd && iterAd->getInfo()->getInfo() != w)  // Buscar ese arco apuntando
             iterAd = iterAd->getProximoNodo();
 
         if(iterAd)  // Preguntar si fue encontrado
