@@ -16,7 +16,7 @@ using namespace std;
     aa
 */
 //testeo samuel 8
-//hola mongolo 
+//hola tu papucho
 // Estamos en Github, profe subame algoritmos 2
 
 template<typename Element>
