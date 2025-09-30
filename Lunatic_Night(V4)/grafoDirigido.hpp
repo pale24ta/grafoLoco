@@ -5,7 +5,8 @@
 #include <iostream>
 #include <unordered_map>
 #include <map>
-#include <utility>
+#include <algorithm>    // Inclusion del algorithm
+#include <set>
 #include <list>
 #include <queue>
 using namespace std;
@@ -236,53 +237,70 @@ void Graph<Element>::addVertice(Element v)
 template <typename Element>
 inline void Graph<Element>::getReverse()
 {
-    queue<VerticeNode*> invertidoV,invertidoW;  // Colas para guardar los arcos unicos
-    VerticeNode<Element> *iteradorVertice;  // Para iterar en las vertices del grafo
-    ArcNode<Element> *iterAdy, nuevo, ant;  // Iterar en los nodos de adyacencia, Crear un nuevo arco y memorizar el anterior
+    // Para este metodo, tendremos que invertir todas los arcos del grafo dirigido
+    // es decir, v -> w va a ser w -> v
 
-    bool existe; // Variable boolean que indica si el arco adyacente ya es habia girado para omitirse
-    iteradorVertice = this->g;  // Comineza desde el nodo inicial
-    iterAdy = NULL;
-    nuevo = NULL;
+    // Para facilitar el trabajo de inversion, utilizaremos una clase conjunto
+    set<pair<VerticeNode<Element>*, VerticeNode<Element>* > > arcosUnicos;   // Este objeto coleccionara los arcos ya anteriormente volteados
+    
+    // Iteradores
+    VerticeNode<Element> *iteradorVertices  = g;    // Iterador de vertices
+    ArcNode<Element> *iteradorArcos = NULL, *ant, *nuevoArco, *aux;     // Iterador de arcos, puntero para memorizar el arco anterior y otro para crear el nuevo arco
 
-    // interamos las vertices hasta NULL
-    while(iteradorVertice){
-        // comenzamos a iterar los nodos de adyacencia del vertice v
-        iterAdy = iteradorVertice->getListaAdyacencia();
-        // inicializamos el ant en NULL
+    // Begin
+
+    // iteramos cada vertice
+    while(iteradorVertices){
+        iteradorArcos = iteradorVertices->getListaAdyacencia(); 
         ant = NULL;
 
-        // iteramos la lista de adyacencia tambien
-        while(iterAdy){
+        // iteramos cada arco
+        while(iteradorArcos){
+            
+            // Auxiliar para tomar un par de vertices
+            pair<VerticeNode<Element>*, VerticeNode<Element>* > auxiliar(iteradorVertices,iteradorArcos->getInfo());
+            
+            // Primero preguntamos si el arco w -> v existe
 
-            // existe inicializa en falso
-            existe = false;
-            // Preguntamos si las colas contienen vertices
-            if(!invertidoV.empty() || !invertidoW.empty()){
-
-                // si v y w ya se habian trabajado antes en otra vertice
-                existe = (invertidoV.front() == iterVertice && invertidoW.front() == iterAdy->getInfo());
-            }
-
-            // En caso de haberse trabajado antes
-            if(existe){
+            // Cuando vayamos iterando por los arcos del los vertices, debemos tener cuidado en cambiar nuevamente las aristas ya cambiadas en pasos anteriores
+            
+            // En caso de no existir ese caso, se elimina el arco iterArcos y se asigna un nuevo arco otro
+            if(arcosUnicos.find(auxiliar) == arcosUnicos.end()){
                 
-                // solamente desencolamos invertidos y desplazamos ant y iterAdy
-                invertidoV.pop();
-                invertidoW.pop();
-                ant = iterAdy;
-                iterAdy = iterAdy->getProximoNodo();
+                // Creamos el nuevo arco
+                nuevoArco = new ArcNode<Element>(iteradorVertices,0,iteradorArcos->getInfo()->getListaAdyacencia());
+                // A su ves, debemos incorporarlo en el conjunto
+                arcosUnicos.insert(make_pair(iteradorArcos->getInfo(),iteradorVertices));   // Tiene que ser el arco w->v
+                iteradorArcos->getInfo()->setListaAdyacencia(nuevoArco);    // Se agrega un nuevoArco al vertice w
+
+
+                // Eliminaremos el arco de v
+                aux = iteradorArcos;
+
+                if(ant){
+                    // En caso de estar en medio de la lista
+                    ant->setProximoNodo(iteradorArcos->getProximoNodo());
+                    iteradorArcos = ant->getProximoNodo();
+                }else{
+                    // Caso de estar al principio
+                    iteradorVertices->setListaAdyacencia(iteradorArcos->getProximoNodo());
+                    iteradorArcos = iteradorVertices->getListaAdyacencia();
+                }
+
+                // Liberamos ese arco
+                delete aux;
             }else{
-                // Aqui adentro haremos el cambio de sentido del arco
-                // asignamos y construimos el nuevo arco
-                nuevo = new ArcNodo<Element>(iteradorVertice);
-
-                // Enlistamos ese arco a la lista de adyacencia de w
-                nuevo->setProximoNodo(iterAdy->getInfo()->getListaAdyacencia())
+                // En caso de que sea un arco ya incorporado en la inversion
+                // seguimos iterando normalmente
+                ant = iteradorArcos;
+                iteradorArcos = iteradorArcos->getProximoNodo();
             }
+
+            
         }
+            // Vamos hacia otra vertice
 
-
+        iteradorVertices = iteradorVertices->getProximoNodo();
 
     }
 

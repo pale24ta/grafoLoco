@@ -17,29 +17,57 @@ void dfs(UndirectedGraph<int> &g,int v, bool visitados[]);
 
 
 int main(){
-    UndirectedGraph<char> grafoNuevo;
-
-    ifstream in("entrada.txt");
+    // UndirectedGraph<char> grafoNuevo;
+    Graph<char> nuevoGrafo;
+    // ifstream in("in.txt");
     char a,b;
 
-    while(in >> a >> b)
-        grafoNuevo.addArco(a,b,0);
+    while(cin >> a >> b)
+        nuevoGrafo.addArco(a,b,0);
 
-    
-    // mapeamos el grafo
 
-    UndirectedGraph<int> mapeado = grafoNuevo.getMapGrafo();
-    map<int,char> dic = grafoNuevo.getMapVertices();
 
-    cout<<"[";
-    for(const auto&n : puentesGrafo(mapeado)){
-        cout<<"[";
-        for(const auto& m : n){
-            cout<<dic[m] << ",";
+    cout<<"Antes =";
+    // Mostrar arcos antes del invertir
+    cout<<'[';
+    for(const auto&n : nuevoGrafo.getArcos()){
+        cout<<'[';
+        for(const auto&m : n){
+            cout<<m<<",";
         }
         cout<<"],";
     }
-    cout<<"]";
+    cout<<"]"<<endl;
+    
+    nuevoGrafo.getReverse();
+
+    
+    cout<<"Despues =";
+    // Mostrar arcos antes del invertir
+    cout<<'[';
+    for(const auto&n : nuevoGrafo.getArcos()){
+        cout<<'[';
+        for(const auto&m : n){
+            cout<<m<<",";
+        }
+        cout<<"],";
+    }
+    cout<<"]"<<endl;
+
+    // // mapeamos el grafo
+
+    // UndirectedGraph<int> mapeado = grafoNuevo.getMapGrafo();
+    // map<int,char> dic = grafoNuevo.getMapVertices();
+
+    // cout<<"[";
+    // for(const auto&n : puentesGrafo(mapeado)){
+    //     cout<<"[";
+    //     for(const auto& m : n){
+    //         cout<<dic[m] << ",";
+    //     }
+    //     cout<<"],";
+    // }
+    // cout<<"]";
     
     return 0;
 }
