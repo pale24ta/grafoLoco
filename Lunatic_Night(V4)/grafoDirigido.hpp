@@ -41,7 +41,7 @@ class Grafo{
         Element getFuente();  // Devuelve el nodo inicial del grafo, es decir el atributo VerticeNode<Element> *g, pero en este caso, su elemento contenido en el 
         bool esVacio();     // Metodo logico si el grafo no tiene nodos // O(1) porque solo se verifica los atributos nVertices
         void addVertice(Element v);   // Anadir una vertice al principio de la vertice apuntada por el apuntador "g" de VerticeNode O(1)
-        
+
         // Nodo: estos dos metodos que tienen virtual estan pensados para reinventarse en la clase hija de grafo, Grafo no dirigido
         virtual void agregarArco(Element v, Element w, float c);    // Buscar el vertice 'v' en la lista de vertices y agregar un nodo de adyacencia a ese vertice para apuntar el vertice 'w', O(n)
         virtual void agregarArco(Element v, Element w);             // Crea un arco con peso 1
@@ -62,7 +62,8 @@ class Grafo{
         Grafo<int> getMapGrafo(); //retorna un el mismo grafo con valores mapeados
         list<int> BFS(Grafo<int> &g);
         list<int> DFS(Grafo<int> &g);    
-        
+        int getGradoSalida(Element v);              //retorna el grado de salida (numero de arcos que apuntan a otros Vertices)
+        int getGradoEntrada(Element v);             //Retorna el grado de entrada (numnero de arcos que apuntan al Vertice)
 };
 
 
@@ -839,6 +840,76 @@ void Grafo<Element>::DFS(Grafo<int> &g, int fuente, list<int> &recorrido, bool *
     }
 }
 
+template <typename Element>
+int Grafo<Element>::getGradoSalida(Element v){
+    NodoVertice<Element>* act;
+    NodoArco<Element>* arcoAct;
+    int grado=0;
+    //itera hasta encontrar el vercice v
+    act=g;
+    while (act && act->getInfo()!= v)
+    {
+        act=act->getProximoNodo();
+    }
+    //si lo encuentra, cuenta el numero de sucesores que tiene
+    if (act!=NULL)
+    {
+        arcoAct=act->getListaAdyacencia();
+        while (arcoAct)
+        {
+            grado++;
+            arcoAct=arcoAct->getProximoNodo();
+        }
+    }else//en caso contrario retornara -1 porque no existe tal vertise
+    {
+        grado = -1;
+    }
+    
+    return grado;
+}
+template <typename Element>
+int Grafo<Element>::getGradoEntrada(Element v){
+    NodoVertice<Element>* act;
+    NodoArco<Element>* arcoAct;
+    int grado=0;
+    bool found;
 
+    act=g;
+    //verifica que exista el vertice
+    while (act && act->getInfo()!= v)
+    {
+        act=act->getProximoNodo();
+    }
+
+    
+    if (act)
+    {
+        act=g;          //si exite, recorre desde el primer nodo en busca de los vertices que lo apunten
+        while (act)
+        {
+            if (act->getInfo()!=v)
+            {
+                found=false;
+                arcoAct=act->getListaAdyacencia();
+                while (arcoAct && found)
+                {
+                    if (arcoAct->getInfo()->getInfo() == v)     //si un vertice lo apunta, suma 1 y se sale del ciclo
+                    {
+                        grado++;
+                        found = true;
+                    }
+                    arcoAct=arcoAct->getProximoNodo();
+                }
+            
+            }
+            act=act->getProximoNodo();
+       }
+    }else
+    {//si no existe el vertice, retornara -1
+        grado=-1;
+    }
+    
+    return grado;
+}
 #endif
 
