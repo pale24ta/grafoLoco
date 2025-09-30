@@ -9,128 +9,76 @@
 
 using namespace std;
 
-
-
-bool grafoEsConexo(UndirectedGraph<int> &g);
-list<list<int> > puentesGrafo(UndirectedGraph<int> &g);
-void dfs(UndirectedGraph<int> &g,int v, bool visitados[]);
-
-
 int main(){
-    // UndirectedGraph<char> grafoNuevo;
-    Graph<char> nuevoGrafo;
-    // ifstream in("in.txt");
-    char a,b;
+    Graph<char> g;
 
-    while(cin >> a >> b)
-        nuevoGrafo.addArco(a,b,0);
-
-
-
-    cout<<"Antes =";
-    // Mostrar arcos antes del invertir
-    cout<<'[';
-    for(const auto&n : nuevoGrafo.getArcos()){
-        cout<<'[';
-        for(const auto&m : n){
-            cout<<m<<",";
-        }
-        cout<<"],";
+    UndirectedGraph<char> ng;
+    char v,w;
+    int i=0;
+    while (cin>> v >> w)
+    {
+        i++;
+        g.addArco(v,w,i);
+        ng.addArco(v,w,i);
+        
     }
-    cout<<"]"<<endl;
-    
-    nuevoGrafo.getReverse();
-
-    
-    cout<<"Despues =";
-    // Mostrar arcos antes del invertir
-    cout<<'[';
-    for(const auto&n : nuevoGrafo.getArcos()){
-        cout<<'[';
-        for(const auto&m : n){
-            cout<<m<<",";
-        }
-        cout<<"],";
+    /*Graph<char> t(g);
+    if(t.getMArcos()==g.getMArcos())
+        cout<<"merequetengue"<<endl;*/
+    //sin mapear
+    cout<<"Vertices: ";
+    list<char> vertices=g.getVertices();
+    for (char e : vertices)
+    {
+        cout<< e << ", ";
     }
-    cout<<"]"<<endl;
+    cout<<endl;
 
-    // // mapeamos el grafo
+    //mapeado
+    Graph<int> gMap=g.getMapGrafo();
+    list<int> mapa=gMap.getVertices();
+    cout<<"Mapa: ";
+    for (int e : mapa)
+    {
+        cout<< e << ", ";
+    }
+    cout<<endl;
+    //Arcos sin mapear
+    list<list<char>> arcos=g.getArcos();
+    float peso;
+    for (list<char> par: arcos)
+    {
+        cout<<"(";
+        for (char e : par)
+        {
+            cout<<e<<" ";
+            
+        }
+        peso=gMap.getPesoArco(par.front(),par.back());
+        cout<<")= "<<peso<<endl;
+    }
+    cout<<endl;
 
-    // UndirectedGraph<int> mapeado = grafoNuevo.getMapGrafo();
-    // map<int,char> dic = grafoNuevo.getMapVertices();
+    //arcos mapeados
+    list<list<int>> arcosMap=gMap.getArcos();
+    for (list<int> par: arcosMap)
+    {
+        cout<<"(";
+        for (int e : par)
+        {
+            cout<<e<<" ";
+        }
+        peso=g.getPesoArco(par.front(),par.back());
+        cout<<")= "<<peso<<endl;
+    }
 
-    // cout<<"[";
-    // for(const auto&n : puentesGrafo(mapeado)){
-    //     cout<<"[";
-    //     for(const auto& m : n){
-    //         cout<<dic[m] << ",";
-    //     }
-    //     cout<<"],";
-    // }
-    // cout<<"]";
-    
+    //TEST Grafo no dirigido
+    vertices=ng.getVertices();
+    for (char e : vertices)
+    {
+        cout<< e << ", ";
+    }
+    cout<<endl;
+
     return 0;
-}
-
-
-
-bool grafoEsConexo(UndirectedGraph<int> &g){
-
-    bool respuesta = true;
-    bool visitados[g.orden()];
-
-    for(int i = 0 ; i < g.orden() ; i++){
-        visitados[i] = false;
-    }
-
-    // hacemos el recorrido dfs
-
-    dfs(g,g.getFuente(),visitados);
-
-    // revisamos los visitados,
-    // SI alguno de ellos no ha sido visitado por los recorrido, implica que no es conexo
-
-    for(int i = 0 ; i < g.orden() && respuesta ; i++){
-        respuesta = visitados[i];
-    }
-
-    return respuesta;
-}
-list<list<int> > puentesGrafo(UndirectedGraph<int> &g){
-
-    // Vamos a resolver este ejercicio por el camino largo
-    int v,w;
-    list<list<int> > arcosGrafo = g.getArcos(); // Obtenemos la lista de los arcos disponibles
-    list<list<int> > puentes;
-    // bool res = true;
-
-    while(!arcosGrafo.empty()){
-        v = arcosGrafo.front().front();
-        w = arcosGrafo.front().back();
-        
-        // Eliminamos esos arcos
-
-        g.eliminarArco(v,w);
-        // probamos si, eliminando esos grafos sigue siendo conexo
-        
-        if(!grafoEsConexo(g)){
-            puentes.push_front(list<int>({v,w}));   // Guardamos esas vertices
-        }
-        g.addArco(v,w,0); // Restauramos ese arco de nuevo en el grafo
-        arcosGrafo.pop_front();
-    }
-
-    return puentes;
-}
-void dfs(UndirectedGraph<int> &g,int v, bool visitados[]){
-
-    if(!visitados[v]){
-        visitados[v] = true;
-
-        list<int> vecinos = g.getVecinos(v);
-        while(!vecinos.empty()){
-            dfs(g,vecinos.front(),visitados);
-            vecinos.pop_front();
-        }
-    }
 }
