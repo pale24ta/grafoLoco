@@ -7,8 +7,8 @@
 #include <unordered_map>
 #include <utility>
 #include <set>
-#include<list>
-#include<queue>
+#include <list>
+#include <queue>
 using namespace std;
 
 
@@ -36,6 +36,7 @@ class UndirectedGraph : public Graph<Element>{
         ~UndirectedGraph();
         list<Element> getVecinos(Element e);
         void addArco(Element v, Element w, float c);    // la insercion de arcos sera diferente ya que tendremos que insertar un nodo adyacencia apuntando al otro
+        void addArco(Element v, Element w) {addArco(v,w,1);}     //dado solo dos vertices agrega un arco con valor generico 1
         void eliminarArco(Element v,Element w);     // Eliminar el arco es buscar el vertice inicial y luego el vertice correspondiente O(n + m)
         UndirectedGraph<int> getMapGrafo(); //retorna un el mismo grafo con valores mapeados
         list<list<Element> > getArcos();    // Devuelve la lista de arcos del grafo
@@ -63,8 +64,8 @@ void UndirectedGraph<Element>::addArco(Element v, Element w, float c){
     if(this->arcoExiste(v,w) && this->arcoExiste(w,v)) return;
     // Para esta union de arcos, hay que hacer tal que v -> w y w -> v
 
-    VerticeNode<Element> *iterVerticeA = this->g, *iterVerticeB = NULL;
-    ArcNode<Element> *nuevoArco = NULL;
+    NodoVertice<Element> *iterVerticeA = this->g, *iterVerticeB = NULL;
+    NodoArco<Element> *nuevoArco = NULL;
     Element aux;
 
     // El primer paso seria encontrar v o w en el grafo, utilizarems iterVerticeA para ello
@@ -74,9 +75,9 @@ void UndirectedGraph<Element>::addArco(Element v, Element w, float c){
 
     // en caso de no haber encontrado la vertice v o w, hay que crearla
     if(!iterVerticeA){
-        iterVerticeA = new VerticeNode<Element>(v);   // Este vertice sera v
+        iterVerticeA = new NodoVertice<Element>(v);   // Este vertice sera v
         
-        VerticeNode<Element> *aux = this->g;
+        NodoVertice<Element> *aux = this->g;
         while(aux && aux->getProximoNodo())
             aux =  aux->getProximoNodo();
 
@@ -103,12 +104,12 @@ void UndirectedGraph<Element>::addArco(Element v, Element w, float c){
     
     // igual caso si no se encontro la otra vertice se crea
     if(!iterVerticeB){
-        VerticeNode<Element> *iterAux = this->g;
+        NodoVertice<Element> *iterAux = this->g;
 
         // dependiendo del vertice anterior creada/encontrada/ se crea con el dato del opuesto
         Element e = (aux == w)? v : w;
 
-        iterVerticeB = new VerticeNode<Element>(e);
+        iterVerticeB = new NodoVertice<Element>(e);
 
         // insertamos al final del grafo
         while(iterAux && iterAux->getProximoNodo())
@@ -129,11 +130,11 @@ void UndirectedGraph<Element>::addArco(Element v, Element w, float c){
     // una ves encontrado las dos vertices, ahora creamos un arco que apunte de
     // v -> w
 
-    nuevoArco = new ArcNode<Element>(iterVerticeB,c,iterVerticeA->getListaAdyacencia());
+    nuevoArco = new NodoArco<Element>(iterVerticeB,c,iterVerticeA->getListaAdyacencia());
     iterVerticeA->setListaAdyacencia(nuevoArco);
 
     // w -> v
-    nuevoArco = new ArcNode<Element>(iterVerticeA,c,iterVerticeB->getListaAdyacencia());
+    nuevoArco = new NodoArco<Element>(iterVerticeA,c,iterVerticeB->getListaAdyacencia());
     iterVerticeB->setListaAdyacencia(nuevoArco);
     this->mArcos += 1;
 }
@@ -141,8 +142,8 @@ void UndirectedGraph<Element>::addArco(Element v, Element w, float c){
 template<typename Element>
 void UndirectedGraph<Element>::eliminarArco(Element v,Element w){     // Eliminar el arco es buscar el vertice inicial y luego el vertice correspondiente O(n + m)
     // Aqui seria mas facil encontrar la vertice v o w, nos apoyamos del arco
-    VerticeNode<Element> *iterVer = this->g;
-    ArcNode<Element> *iterAdyAct = NULL,*iterAdyAnt = NULL;
+    NodoVertice<Element> *iterVer = this->g;
+    NodoArco<Element> *iterAdyAct = NULL,*iterAdyAnt = NULL;
 
     //Buscamos alguna vertice
 
@@ -206,8 +207,8 @@ list<Element> UndirectedGraph<Element>::getVecinos(Element e){
     // aqui basta buscar la vertice e
 
 
-    VerticeNode<Element> *iterVertice = this->g;
-    ArcNode<Element> *iterListaAdy = NULL;
+    NodoVertice<Element> *iterVertice = this->g;
+    NodoArco<Element> *iterListaAdy = NULL;
 
     while(iterVertice && iterVertice->getInfo() != e){
         iterVertice = iterVertice->getProximoNodo();
@@ -231,9 +232,9 @@ list<Element> UndirectedGraph<Element>::getVecinos(Element e){
 template <typename Element>
 inline UndirectedGraph<int> UndirectedGraph<Element>::getMapGrafo()
 {
-    VerticeNode<Element> *act= this->g;
-    ArcNode<Element> *adyAct;
-    map<VerticeNode<Element>*,int> mapa;
+    NodoVertice<Element> *act= this->g;
+    NodoArco<Element> *adyAct;
+    map<NodoVertice<Element>*,int> mapa;
     UndirectedGraph<int> grafo;
     int i=0;
     
@@ -270,8 +271,8 @@ inline list<list<Element> > UndirectedGraph<Element>::getArcos()
     // Usaremos una clase conjunto
     set<pair<Element, Element> > arcosUnicos;
 
-    VerticeNode<Element> *iterVertice = this->g;
-    ArcNode<Element> *iterAdy = NULL;
+    NodoVertice<Element> *iterVertice = this->g;
+    NodoArco<Element> *iterAdy = NULL;
 
     while(iterVertice){
         iterAdy = iterVertice->getListaAdyacencia();
