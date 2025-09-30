@@ -543,7 +543,7 @@ float Grafo<Element>::getPesoArco(Element v, Element w)  // Encontrar el peso de
 template <typename Element>
 inline int Grafo<Element>::orden()
 {
-    return nVertices;
+    return nVertices; // devolver
 }
 
 template <typename Element>
