@@ -13,7 +13,7 @@ using namespace std;
 /*
     GRAFO DIRIGIDO
 */
-// Estamos en Github, profe subame algoritmos 2
+
 
 template<typename Element>
 class Graph{
