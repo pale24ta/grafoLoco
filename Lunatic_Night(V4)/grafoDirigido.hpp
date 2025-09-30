@@ -13,12 +13,12 @@ using namespace std;
 
 /*
     GRAFO DIRIGIDO
-    cargar nuevo testeo 6 s
+    cargar nuevo testeo 6
     aa
 */
-//testeo samuel 9
-//hola tu papucho
-// Estamos en Github, profe subame algoritmos 2
+
+//testeo samuel 3
+// Estamos en Github, profe subame algoritmos 2 otro cambio
 
 template<typename Element>
 class Graph{
