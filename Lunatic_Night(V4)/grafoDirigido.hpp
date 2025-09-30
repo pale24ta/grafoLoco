@@ -12,6 +12,8 @@ using namespace std;
 
 /*
     GRAFO DIRIGIDO
+    cargar nuevo testeo 6 s
+    aa
 */
 // Estamos en Github, profe subame algoritmos 2
 
