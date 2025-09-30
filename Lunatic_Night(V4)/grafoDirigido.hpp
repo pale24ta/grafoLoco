@@ -14,7 +14,7 @@ using namespace std;
 /*
     GRAFO DIRIGIDO
     cargar nuevo testeo 6 s
-    aa
+    aa No se que pasa
 */
 
 //testeo samuel 3
