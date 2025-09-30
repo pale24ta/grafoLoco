@@ -4,26 +4,26 @@
 // La clase Nodo para grafos
 
 template<typename Element>
-class NodoArco;  // Forward declaration, le indica al compilador a la hora de leer la clase NodoVertice que existe otra clase llamada NodoArco
+class ArcNode;  // Forward declaration, le indica al compilador a la hora de leer la clase NodoVertice que existe otra clase llamada ArcNode
 
 template <class Element>
-class NodoVertice{
+class VerticeNode{
 
     private:
         Element info;
-        NodoVertice<Element> *prox;   // Apunta a la siguiente vertice (actuando como un nodo de lista)
-        NodoArco<Element> *listAdy;  // Lista de apuntadores hacia un vertice correspondiente
+        VerticeNode<Element> *prox;   // Apunta a la siguiente vertice (actuando como un nodo de lista)
+        ArcNode<Element> *listAdy;  // Lista de apuntadores hacia un vertice correspondiente
 
     public:
         // Constructores
-        NodoVertice(){}  // Vertice vacio
-        NodoVertice(Element v): info(v),prox(NULL),listAdy(NULL){}   // Vertice solamente con la informacion
-        NodoVertice(Element v, NodoVertice<Element> *vN, NodoArco<Element>* adyN):info(v),prox(vN), listAdy(adyN){} // Vertice con sus atributos
+        VerticeNode(){}  // Vertice vacio
+        VerticeNode(Element v): info(v),prox(NULL),listAdy(NULL){}   // Vertice solamente con la informacion
+        VerticeNode(Element v, VerticeNode<Element> *vN, ArcNode<Element>* adyN):info(v),prox(vN), listAdy(adyN){} // Vertice con sus atributos
         // Destructor
-        ~NodoVertice() // le destructor se encargara de eliminar tanto la lista de nodos adyacencia como la vertice 
+        ~VerticeNode() // le destructor se encargara de eliminar tanto la lista de nodos adyacencia como la vertice 
         {
             if(listAdy){
-                NodoArco<Element> *del = NULL, *act = listAdy; // el puntero borrador y el iterador
+                ArcNode<Element> *del = NULL, *act = listAdy; // el puntero borrador y el iterador
                 while(act){
                     del = act;  // Apunta al siguiente a eliminar
                     act = act->getProximoNodo();    // desplaza el iterador
@@ -35,40 +35,40 @@ class NodoVertice{
 
         // Getter y setters
         Element getInfo(){return info;}
-        NodoVertice<Element>* getProximoNodo(){return prox;}
-        NodoArco<Element>* getListaAdyacencia(){return listAdy;}
+        VerticeNode<Element>* getProximoNodo(){return prox;}
+        ArcNode<Element>* getListaAdyacencia(){return listAdy;}
         void setInfo(Element e){info = e;}
-        void setProximoNodo(NodoVertice<Element> *e){prox = e;}
-        void setListaAdyacencia(NodoArco<Element>* lista){listAdy = lista;}
+        void setProximoNodo(VerticeNode<Element> *e){prox = e;}
+        void setListaAdyacencia(ArcNode<Element>* lista){listAdy = lista;}
 };
 
 // clase nodo de adyacencia 
 template <class Element>
-class NodoArco{
+class ArcNode{
     
     // atributos
     private:
-        NodoVertice<Element> *info;   // este atributo contentra el puntero hacia la vertice que apunta el arco
+        VerticeNode<Element> *info;   // este atributo contentra el puntero hacia la vertice que apunta el arco
         float weight;   // el peso de ese arco
-        NodoArco<Element> *prox;   // el nodo siguiente de la lista de adyacencia
+        ArcNode<Element> *prox;   // el nodo siguiente de la lista de adyacencia
 
     public:
         // Constructores
-        NodoArco():info(NULL),weight(0.0),prox(NULL){} // Nodo vacio
-        NodoArco(NodoVertice<Element> *i): info(i),weight(0.0),prox(NULL){} // Nodo ya apuntando a algun vertice
-        NodoArco(NodoVertice<Element> *i, float costo, NodoArco<Element> *prox): info(i),weight(costo),prox(prox){}  // Nodo Completo
-        ~NodoArco(){
+        ArcNode():info(NULL),weight(0.0),prox(NULL){} // Nodo vacio
+        ArcNode(VerticeNode<Element> *i): info(i),weight(0.0),prox(NULL){} // Nodo ya apuntando a algun vertice
+        ArcNode(VerticeNode<Element> *i, float costo, ArcNode<Element> *prox): info(i),weight(costo),prox(prox){}  // Nodo Completo
+        ~ArcNode(){
             weight=0.0;
             info=NULL;
             prox=NULL;
         }
         // getters y setters
-        NodoVertice<Element> *getInfo(){return info;}
-        NodoArco<Element> *getProximoNodo(){return prox;}
+        VerticeNode<Element> *getInfo(){return info;}
+        ArcNode<Element> *getProximoNodo(){return prox;}
         float getCosto(){return weight;}
-        void setInfo(NodoVertice<Element> *vN){info = vN;}
+        void setInfo(VerticeNode<Element> *vN){info = vN;}
         void setCosto(float c){weight = c;}
-        void setProximoNodo(NodoArco<Element> *pN){prox = pN;}
+        void setProximoNodo(ArcNode<Element> *pN){prox = pN;}
 };
 
 
