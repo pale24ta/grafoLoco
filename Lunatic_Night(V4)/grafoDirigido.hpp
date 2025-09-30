@@ -64,6 +64,7 @@ class Grafo{
         list<int> DFS(Grafo<int> &g);    
         int getGradoSalida(Element v);              //retorna el grado de salida (numero de arcos que apuntan a otros Vertices)
         int getGradoEntrada(Element v);             //Retorna el grado de entrada (numnero de arcos que apuntan al Vertice)
+
 };
 
 
@@ -911,5 +912,7 @@ int Grafo<Element>::getGradoEntrada(Element v){
     
     return grado;
 }
+
+
 #endif
 
