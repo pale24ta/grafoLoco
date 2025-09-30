@@ -12,11 +12,7 @@ using namespace std;
 
 /*
     GRAFO DIRIGIDO
-    cargar nuevo testeo 6 s
-    aa
 */
-//testeo samuel 9
-//hola tu papucho
 // Estamos en Github, profe subame algoritmos 2
 
 template<typename Element>
