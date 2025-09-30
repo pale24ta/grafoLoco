@@ -18,10 +18,15 @@ int main(){
     while (cin>> v >> w)
     {
         i++;
-        g.addArco(v,w,i);
-        ng.addArco(v,w,i);
+        g.agregarArco(v,w,i);
+        ng.agregarArco(v,w,i);
         
     }
+
+    cout<<"Grado de  salida de a: "<<g.getGradoSalida('A')<<endl;
+    cout<<"Grado de  entrada de a: "<<g.getGradoEntrada('A')<<endl;
+    cout<<"Tiene "<<g.getNVertices()<<" Vertives y "<<g.getMArcos()<<" Arcos."<<endl;
+
     /*Graph<char> t(g);
     if(t.getMArcos()==g.getMArcos())
         cout<<"merequetengue"<<endl;*/
@@ -46,15 +51,18 @@ int main(){
     //Arcos sin mapear
     list<list<char>> arcos=g.getArcos();
     float peso;
+    char from,to;
     for (list<char> par: arcos)
     {
+        from=par.front();
+        to=par.back();
         cout<<"(";
         for (char e : par)
         {
             cout<<e<<" ";
             
         }
-        peso=gMap.getPesoArco(par.front(),par.back());
+        peso=g.getPesoArco(from,to);
         cout<<")= "<<peso<<endl;
     }
     cout<<endl;
@@ -68,7 +76,7 @@ int main(){
         {
             cout<<e<<" ";
         }
-        peso=g.getPesoArco(par.front(),par.back());
+        peso=gMap.getPesoArco(par.front(),par.back());
         cout<<")= "<<peso<<endl;
     }
 

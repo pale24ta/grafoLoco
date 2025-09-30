@@ -16,9 +16,9 @@ using namespace std;
 // que tendra el grafo no dirigido, es el uso de polimorfismo para clase, los atributos seran compartidos,
 // es decir, el acceso de atributos de la clase Graph esta protegida, o en pocas palabras, la clase 
 // Grafo no dirigido tendra acceso a ellas, permitiendo haci una gran facilidad en el polimorfismo de los metodos,
-// addArcos y eliminar Arcos
+// agregarArcos y eliminar Arcos
 
-// Nota : necesitare ayuda para la creacion del metodo addArco y eliminar Arco, ya los metodos estan ajustados para no interferir con el de la clase
+// Nota : necesitare ayuda para la creacion del metodo agregarArco y eliminar Arco, ya los metodos estan ajustados para no interferir con el de la clase
 // grafo
 
 /**
@@ -35,8 +35,8 @@ class UndirectedGraph : public Graph<Element>{
         UndirectedGraph(const UndirectedGraph &target);
         ~UndirectedGraph();
         list<Element> getVecinos(Element e);
-        void addArco(Element v, Element w, float c);    // la insercion de arcos sera diferente ya que tendremos que insertar un nodo adyacencia apuntando al otro
-        void addArco(Element v, Element w) {addArco(v,w,1);}     //dado solo dos vertices agrega un arco con valor generico 1
+        void agregarArco(Element v, Element w, float c);    // la insercion de arcos sera diferente ya que tendremos que insertar un nodo adyacencia apuntando al otro
+        void agregarArco(Element v, Element w) {agregarArco(v,w,1);}     //dado solo dos vertices agrega un arco con valor generico 1
         void eliminarArco(Element v,Element w);     // Eliminar el arco es buscar el vertice inicial y luego el vertice correspondiente O(n + m)
         UndirectedGraph<int> getMapGrafo(); //retorna un el mismo grafo con valores mapeados
         list<list<Element> > getArcos();    // Devuelve la lista de arcos del grafo
@@ -58,7 +58,7 @@ UndirectedGraph<Element>::~UndirectedGraph(){
 }
 
 template <typename Element>
-void UndirectedGraph<Element>::addArco(Element v, Element w, float c){
+void UndirectedGraph<Element>::agregarArco(Element v, Element w, float c){
        
     // En caso de que esos dos arcos ya existan en el grafo, no se opera
     if(this->arcoExiste(v,w) && this->arcoExiste(w,v)) return;
@@ -253,7 +253,7 @@ inline UndirectedGraph<int> UndirectedGraph<Element>::getMapGrafo()
         adyAct=act->getListaAdyacencia();
         while (adyAct)  //recorre todos los arcos de los vertices
         {
-            grafo.addArco(mapa[act],mapa[adyAct->getInfo()],this->getPesoArco(act->getInfo(),adyAct->getInfo()->getInfo()));    //crea el arco mapeado
+            grafo.agregarArco(mapa[act],mapa[adyAct->getInfo()],this->getPesoArco(act->getInfo(),adyAct->getInfo()->getInfo()));    //crea el arco mapeado
             adyAct=adyAct->getProximoNodo();
         }
         act=act->getProximoNodo();
