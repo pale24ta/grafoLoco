@@ -5,7 +5,6 @@
 #include "grafoDirigido.hpp"
 #include <iostream>
 #include <unordered_map>
-#include <utility>
 #include <set>
 #include<list>
 #include<queue>
@@ -14,42 +13,32 @@ using namespace std;
 
 // Para esta clase, el grafo no dirigido sera hijo del grafo dirigido, aqui la particularidad
 // que tendra el grafo no dirigido, es el uso de polimorfismo para clase, los atributos seran compartidos,
-// es decir, el acceso de atributos de la clase Graph esta protegida, o en pocas palabras, la clase 
+// es decir, el acceso de atributos de la clase Grafo esta protegida, o en pocas palabras, la clase 
 // Grafo no dirigido tendra acceso a ellas, permitiendo haci una gran facilidad en el polimorfismo de los metodos,
-// addArcos y eliminar Arcos
-
-// Nota : necesitare ayuda para la creacion del metodo addArco y eliminar Arco, ya los metodos estan ajustados para no interferir con el de la clase
-// grafo
-
-/**
- * GRAFO NO DIRIGIDO
- */
+// agregarArcos y eliminar Arcos
 
 template <typename Element>
-class UndirectedGraph : public Graph<Element>{
+class GrafoNoDirigido : public Grafo<Element>{
 
-    protected:
-        void dfs(UndirectedGraph<int> &g, int inicial, bool visitados[], list<int> &result);
     public:
-        UndirectedGraph();
-        UndirectedGraph(const UndirectedGraph &target);
-        ~UndirectedGraph();
+        GrafoNoDirigido();
+        GrafoNoDirigido(const GrafoNoDirigido &target);
+        ~GrafoNoDirigido();
         list<Element> getVecinos(Element e);
-        void addArco(Element v, Element w, float c);    // la insercion de arcos sera diferente ya que tendremos que insertar un nodo adyacencia apuntando al otro
+        void agregarArco(Element v, Element w, float c);    // la insercion de arcos sera diferente ya que tendremos que insertar un nodo adyacencia apuntando al otro
         void eliminarArco(Element v,Element w);     // Eliminar el arco es buscar el vertice inicial y luego el vertice correspondiente O(n + m)
-        UndirectedGraph<int> getMapGrafo(); //retorna un el mismo grafo con valores mapeados
+        GrafoNoDirigido<int> getMapGrafo(); //retorna un el mismo grafo con valores mapeados
         list<list<Element> > getArcos();    // Devuelve la lista de arcos del grafo
         
-        list<Element> dfs();
 };
 template <typename Element>
-UndirectedGraph<Element>::UndirectedGraph(): Graph<Element>(){}
+GrafoNoDirigido<Element>::GrafoNoDirigido(): Grafo<Element>(){}
 
 template <typename Element>
-UndirectedGraph<Element>::UndirectedGraph(const UndirectedGraph &target):Graph<Element>(target){}
+GrafoNoDirigido<Element>::GrafoNoDirigido(const GrafoNoDirigido &target):Grafo<Element>(target){}
 
 template <typename Element>
-UndirectedGraph<Element>::~UndirectedGraph(){
+GrafoNoDirigido<Element>::~GrafoNoDirigido(){
     this->vaciarGrafo();
     this->g = NULL;
     this->mArcos = 0;
@@ -57,10 +46,10 @@ UndirectedGraph<Element>::~UndirectedGraph(){
 }
 
 template <typename Element>
-void UndirectedGraph<Element>::addArco(Element v, Element w, float c){
+void GrafoNoDirigido<Element>::agregarArco(Element v, Element w, float c){
        
     // En caso de que esos dos arcos ya existan en el grafo, no se opera
-    if(this->arcoExiste(v,w) && this->arcoExiste(w,v)) return;
+    if(this->existeArco(v,w) && this->existeArco(w,v)) return;
     // Para esta union de arcos, hay que hacer tal que v -> w y w -> v
 
     VerticeNode<Element> *iterVerticeA = this->g, *iterVerticeB = NULL;
@@ -139,7 +128,7 @@ void UndirectedGraph<Element>::addArco(Element v, Element w, float c){
 }
 
 template<typename Element>
-void UndirectedGraph<Element>::eliminarArco(Element v,Element w){     // Eliminar el arco es buscar el vertice inicial y luego el vertice correspondiente O(n + m)
+void GrafoNoDirigido<Element>::eliminarArco(Element v,Element w){     // Eliminar el arco es buscar el vertice inicial y luego el vertice correspondiente O(n + m)
     // Aqui seria mas facil encontrar la vertice v o w, nos apoyamos del arco
     VerticeNode<Element> *iterVer = this->g;
     ArcNode<Element> *iterAdyAct = NULL,*iterAdyAnt = NULL;
@@ -198,7 +187,7 @@ void UndirectedGraph<Element>::eliminarArco(Element v,Element w){     // Elimina
 }
 
 template <typename Element>
-list<Element> UndirectedGraph<Element>::getVecinos(Element e){
+list<Element> GrafoNoDirigido<Element>::getVecinos(Element e){
 
     list<Element> vecinos;
 
@@ -229,12 +218,12 @@ list<Element> UndirectedGraph<Element>::getVecinos(Element e){
 #endif
 
 template <typename Element>
-inline UndirectedGraph<int> UndirectedGraph<Element>::getMapGrafo()
+inline GrafoNoDirigido<int> GrafoNoDirigido<Element>::getMapGrafo()
 {
     VerticeNode<Element> *act= this->g;
     ArcNode<Element> *adyAct;
     map<VerticeNode<Element>*,int> mapa;
-    UndirectedGraph<int> grafo;
+    GrafoNoDirigido<int> grafo;
     int i=0;
     
     //crea los vertices mapeados del grafo
@@ -252,7 +241,7 @@ inline UndirectedGraph<int> UndirectedGraph<Element>::getMapGrafo()
         adyAct=act->getListaAdyacencia();
         while (adyAct)  //recorre todos los arcos de los vertices
         {
-            grafo.addArco(mapa[act],mapa[adyAct->getInfo()],this->getPesoArco(act->getInfo(),adyAct->getInfo()->getInfo()));    //crea el arco mapeado
+            grafo.agregarArco(mapa[act],mapa[adyAct->getInfo()],this->getPesoArco(act->getInfo(),adyAct->getInfo()->getInfo()));    //crea el arco mapeado
             adyAct=adyAct->getProximoNodo();
         }
         act=act->getProximoNodo();
@@ -261,7 +250,7 @@ inline UndirectedGraph<int> UndirectedGraph<Element>::getMapGrafo()
 }
 
 template <typename Element>
-inline list<list<Element> > UndirectedGraph<Element>::getArcos()
+inline list<list<Element> > GrafoNoDirigido<Element>::getArcos()
 {
     // Para este caso, necesitamos guardar los arcos, sin repetir los mismos arcos, no puede haber en la lista
     // v,w y w,v ; solo uno de ellos
@@ -293,44 +282,4 @@ inline list<list<Element> > UndirectedGraph<Element>::getArcos()
         iterVertice = iterVertice->getProximoNodo();
     }
     return arcos;
-}
-
-template <typename Element>
-inline list<Element> UndirectedGraph<Element>::dfs()
-{
-    UndirectedGraph<int> grafoMapeado = this->getMapGrafo();
-    map<int,Element> dic = this->getMapVertices();
-
-    list<int> resultMapeado;
-    list<Element> result;
-    bool visitados[this->nVertices];
-    for(int i =0; i < this->nVertices; i++){
-        visitados[i] = false;
-    }
-
-    dfs(grafoMapeado,grafoMapeado.getFuente(),visitados,resultMapeado);
-
-    while(!resultMapeado.empty()){
-        result.push_back(dic[resultMapeado.front()]);
-        resultMapeado.pop_front();
-    }
-
-    return result;
-}
-
-template <typename Element>
-inline void UndirectedGraph<Element>::dfs(UndirectedGraph<int> &g, int inicial, bool visitados[], list<int> &result)
-{
-    if(!visitados[inicial]){
-
-        visitados[inicial] = true;
-        result.push_back(inicial);
-
-        list<int> vecinos = g.getVecinos(inicial);
-
-        while(!vecinos.empty()){
-            dfs(g,vecinos.front(),visitados,result);
-            vecinos.pop_front();
-        }
-    }
 }

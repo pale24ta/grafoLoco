@@ -3,7 +3,7 @@ CXX = g++
 CXXFLAGS = -Wall -g -O3
 
 #nombre del ejecutable
-TARGET = grafo.out
+TARGET = grafo
 
 #define los archivos fuente (.cpp) que se compilarán
 SRCS = main.cpp

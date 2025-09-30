@@ -5,32 +5,26 @@
 #include <iostream>
 #include <unordered_map>
 #include <map>
-#include <algorithm>    // Inclusion del algorithm
-#include <set>
-#include <list>
-#include <queue>
+#include <utility>
+#include<list>
+#include<queue>
 using namespace std;
 
 /*
     GRAFO DIRIGIDO
-    cargar nuevo testeo 6 s
-    aa No se que pasa
 */
 
-//testeo samuel 3
-// Estamos en Github, profe subame algoritmos 2 otro cambio
-
 template<typename Element>
-class Graph{
+class Grafo{
     protected:
         VerticeNode<Element> *g;
         int nVertices,mArcos;
-
-        void dfs(Graph<int> &g, int inicial, bool visitados[], list<int> &result);
         bool verificarExistenciaElementoEnCola(queue<Element> cola, Element info); // Metodo privado para verificar la existerncia de ese elemento en la cola, implicando que hay que desenconlar para encontrarla
 
     private:
         VerticeNode<Element> *getVerticeInicia(){return g;}
+        void DFS(Grafo<int> &g, int fuente, list<int> &recorrido, bool *visitados);
+        void BFS(Grafo<int> &g, vector<bool> &visitados, list<int> &recorrido, int nodoInicial);
     public:
         // Este metodo puede utilizarse sin instanciar un objeto
         // Esta funcion sirve para mapear los datos de un diccionario, permitiendo asi la facilidad de controlar los recorridos del grafo
@@ -38,21 +32,21 @@ class Graph{
         // Debido a que lo estaremos utilizando para decodificar el mapeo o los resultados que nos deje el grafo [Element,int]
         static unordered_map<int, list<int> > mapearDiccionario(unordered_map<Element, list<Element> > diccionario, unordered_map<Element,int> &mapaComp);    // Metodo funcion que servira para mapear diccionarios y que tenga facil acceso a la hora de procesarlos
     
-        Graph();    // Crea un grafo vacio
-        ~Graph();   // Destruye el grafo
-        Graph(const Graph<Element> &target);  // Constructor copia
+        Grafo();    // Crea un grafo vacio
+        ~Grafo();   // Destruye el grafo
+        Grafo(const Grafo<Element> &target);  // Constructor copia
         void vaciarGrafo(); // Vacia el grafo existente
         Element getFuente();  // Devuelve el nodo inicial del grafo, es decir el atributo VerticeNode<Element> *g, pero en este caso, su elemento contenido en el 
         bool esVacio();     // Metodo logico si el grafo no tiene nodos // O(1) porque solo se verifica los atributos nVertices
         void addVertice(Element v);   // Anadir una vertice al principio de la vertice apuntada por el apuntador "g" de VerticeNode O(1)
-        void getReverse();  // Invierte los arcos de sentido (v->w a w->v)
+        
         // Nodo: estos dos metodos que tienen virtual estan pensados para reinventarse en la clase hija de grafo, Grafo no dirigido
-        virtual void addArco(Element v, Element w, float c);    // Buscar el vertice 'v' en la lista de vertices y agregar un nodo de adyacencia a ese vertice para apuntar el vertice 'w', O(n)
-        virtual void addArco(Element v, Element w);             // Crea un arco con peso 1
+        virtual void agregarArco(Element v, Element w, float c);    // Buscar el vertice 'v' en la lista de vertices y agregar un nodo de adyacencia a ese vertice para apuntar el vertice 'w', O(n)
+        virtual void agregarArco(Element v, Element w);             // Crea un arco con peso 1
         void eliminarVertice(Element v);      // Buscar el vertice y eliminarlo (eso implica tambien eliminar o destruir sus arcos) O(n + m)
         virtual void eliminarArco(Element v,Element w);     // Eliminar el arco es buscar el vertice inicial y luego el vertice correspondiente O(n + m)
-        bool verticeExiste(Element v);    // Buscar el elemento en la lista de vertices, la lista en casos generales se encontrara desordenada, asi que la forma mas viables es iterar en ella, O(n)
-        bool arcoExiste(Element v, Element w);  // Buscar el vertice de adyacencia, primero buscar la vertice para luego buscar su arco O(n + m)
+        bool existeVertice(Element v);    // Buscar el elemento en la lista de vertices, la lista en casos generales se encontrara desordenada, asi que la forma mas viables es iterar en ella, O(n)
+        bool existeArco(Element v, Element w);  // Buscar el vertice de adyacencia, primero buscar la vertice para luego buscar su arco O(n + m)
         float getPesoArco(Element v, Element w);   // O(n + m)
         int orden(); // Consultar el numero de vertices, O(1)
         list<Element> predecesores(Element e); // Conocer los predecesores (los que le envian la informacion a una vertice especifica) O(n + m)
@@ -61,14 +55,15 @@ class Graph{
         list<Element> getVertices(); //O(n)retorna una lista con los vertices del grafo
         virtual list<list<Element> > getArcos();    // Devuelve la lista de arcos del grafo
         map<int,Element> getMapVertices(); //O(n)  retorna un mapa con un mapeo de los vertices
-        Graph<int> getMapGrafo(); //retorna un el mismo grafo con valores mapeados
-        virtual list<Element> dfs();
+        Grafo<int> getMapGrafo(); //retorna un el mismo grafo con valores mapeados
+        list<int> BFS(Grafo<int> &g);
+        list<int> DFS(Grafo<int> &g);    
         
 };
 
 
 template <typename Element>
-inline void Graph<Element>::vaciarGrafo()
+inline void Grafo<Element>::vaciarGrafo()
 {
     if(nVertices == 0) return;  // No puede vaciar un grafo vacio
 
@@ -86,13 +81,13 @@ inline void Graph<Element>::vaciarGrafo()
 }
 
 template <typename Element>
-Element Graph<Element>::getFuente()
+Element Grafo<Element>::getFuente()
 {
     return g->getInfo();
 }
 
 template <typename Element>
-unordered_map<int, list<int>> Graph<Element>::mapearDiccionario(unordered_map<Element, list<Element>> diccionario, unordered_map<Element,int> &mapaComp)
+unordered_map<int, list<int>> Grafo<Element>::mapearDiccionario(unordered_map<Element, list<Element>> diccionario, unordered_map<Element,int> &mapaComp)
 {
 
     int i = 0;
@@ -124,7 +119,7 @@ unordered_map<int, list<int>> Graph<Element>::mapearDiccionario(unordered_map<El
 }
 
 template <typename Element>
-inline bool Graph<Element>::verificarExistenciaElementoEnCola(queue<Element> cola, Element info)
+inline bool Grafo<Element>::verificarExistenciaElementoEnCola(queue<Element> cola, Element info)
 {
     while(!cola.empty()){
         if(cola.front() = info)
@@ -136,12 +131,12 @@ inline bool Graph<Element>::verificarExistenciaElementoEnCola(queue<Element> col
 // Grafo vacio  
 // Inicializa con los datos nulos
 template <typename Element>
-Graph<Element>::Graph() : g(NULL), nVertices(0), mArcos(0)
+Grafo<Element>::Grafo() : g(NULL), nVertices(0), mArcos(0)
 {
 }
 
 template <typename Element>
-inline Graph<Element>::~Graph()
+inline Grafo<Element>::~Grafo()
 {
     vaciarGrafo();  // Llama directamente al vaciarGrafo
     g = NULL;
@@ -150,7 +145,7 @@ inline Graph<Element>::~Graph()
 }
 
 template <typename Element>
-inline Graph<Element>::Graph(const Graph<Element> &target) : g(NULL),nVertices(0),mArcos(0)
+inline Grafo<Element>::Grafo(const Grafo<Element> &target) : g(NULL),nVertices(0),mArcos(0)
 {
     // Copiar todos los vértices
     VerticeNode<Element>* actual = target.g;
@@ -201,13 +196,13 @@ inline Graph<Element>::Graph(const Graph<Element> &target) : g(NULL),nVertices(0
 // en caso de que no haya ninguna vertice en el grafo
 // grafo vacio
 template <typename Element>
-bool Graph<Element>::esVacio()
+bool Grafo<Element>::esVacio()
 {
     return nVertices == 0;
 }
 
 template <typename Element>
-void Graph<Element>::addVertice(Element v)
+void Grafo<Element>::addVertice(Element v)
 {
     // Anadiremos el vertice la principio de la lista de grafos
 
@@ -234,81 +229,10 @@ void Graph<Element>::addVertice(Element v)
     nVertices += 1; // Sumamos la cantidad
 }
 
-template <typename Element>
-inline void Graph<Element>::getReverse()
-{
-    // Para este metodo, tendremos que invertir todas los arcos del grafo dirigido
-    // es decir, v -> w va a ser w -> v
-
-    // Para facilitar el trabajo de inversion, utilizaremos una clase conjunto
-    set<pair<VerticeNode<Element>*, VerticeNode<Element>* > > arcosUnicos;   // Este objeto coleccionara los arcos ya anteriormente volteados
-    
-    // Iteradores
-    VerticeNode<Element> *iteradorVertices  = g;    // Iterador de vertices
-    ArcNode<Element> *iteradorArcos = NULL, *ant, *nuevoArco, *aux;     // Iterador de arcos, puntero para memorizar el arco anterior y otro para crear el nuevo arco
-
-    // Begin
-
-    // iteramos cada vertice
-    while(iteradorVertices){
-        iteradorArcos = iteradorVertices->getListaAdyacencia(); 
-        ant = NULL;
-
-        // iteramos cada arco
-        while(iteradorArcos){
-            
-            // Auxiliar para tomar un par de vertices
-            pair<VerticeNode<Element>*, VerticeNode<Element>* > auxiliar(iteradorVertices,iteradorArcos->getInfo());
-            
-            // Primero preguntamos si el arco w -> v existe
-
-            // Cuando vayamos iterando por los arcos del los vertices, debemos tener cuidado en cambiar nuevamente las aristas ya cambiadas en pasos anteriores
-            
-            // En caso de no existir ese caso, se elimina el arco iterArcos y se asigna un nuevo arco otro
-            if(arcosUnicos.find(auxiliar) == arcosUnicos.end()){
-                
-                // Creamos el nuevo arco
-                nuevoArco = new ArcNode<Element>(iteradorVertices,0,iteradorArcos->getInfo()->getListaAdyacencia());
-                // A su ves, debemos incorporarlo en el conjunto
-                arcosUnicos.insert(make_pair(iteradorArcos->getInfo(),iteradorVertices));   // Tiene que ser el arco w->v
-                iteradorArcos->getInfo()->setListaAdyacencia(nuevoArco);    // Se agrega un nuevoArco al vertice w
-
-
-                // Eliminaremos el arco de v
-                aux = iteradorArcos;
-
-                if(ant){
-                    // En caso de estar en medio de la lista
-                    ant->setProximoNodo(iteradorArcos->getProximoNodo());
-                    iteradorArcos = ant->getProximoNodo();
-                }else{
-                    // Caso de estar al principio
-                    iteradorVertices->setListaAdyacencia(iteradorArcos->getProximoNodo());
-                    iteradorArcos = iteradorVertices->getListaAdyacencia();
-                }
-
-                // Liberamos ese arco
-                delete aux;
-            }else{
-                // En caso de que sea un arco ya incorporado en la inversion
-                // seguimos iterando normalmente
-                ant = iteradorArcos;
-                iteradorArcos = iteradorArcos->getProximoNodo();
-            }
-
-            
-        }
-            // Vamos hacia otra vertice
-
-        iteradorVertices = iteradorVertices->getProximoNodo();
-
-    }
-
-}
 
 // Inserta un arco con su peso correspondiente a una vertice hacia otra vertice
 template <typename Element>
-void Graph<Element>::addArco(Element v, Element w, float c)
+void Grafo<Element>::agregarArco(Element v, Element w, float c)
 {
     // if(!g) return;  // El grafo esta vacio, no hay vertices para enlazar
 
@@ -358,7 +282,7 @@ void Graph<Element>::addArco(Element v, Element w, float c)
         }
     }
 
-    // Cargamos el nodo adyacencia/
+    // Cargamos el nodo adyacencia
     nuevoArco->setCosto(c);
     nuevoArco->setInfo(memorizarVertice);
     nuevoArco->setProximoNodo(iterVertices->getListaAdyacencia());  // el nuevo nodo de adyacencia apunta al nodo de la lista de adyacencias de la vertice(en caso de no haber nodos, apunta a NULL)
@@ -369,13 +293,13 @@ void Graph<Element>::addArco(Element v, Element w, float c)
 
 
 template <typename Element>
-void Graph<Element>::addArco(Element v, Element w)    //realiza la misma funcion que addArco original pero su coste por defecto es 1
+void Grafo<Element>::agregarArco(Element v, Element w)    //realiza la misma funcion que agregarArco original pero su coste por defecto es 1
 {
-    addArco(v,w,1);
+    agregarArco(v,w,1);
 }
 
 template <typename Element>
-inline void Graph<Element>::eliminarVertice(Element v)
+inline void Grafo<Element>::eliminarVertice(Element v)
 {
     if(g == NULL) return;
 
@@ -433,7 +357,7 @@ inline void Graph<Element>::eliminarVertice(Element v)
 }
 
 template <typename Element>
-void Graph<Element>::eliminarArco(Element v, Element w){
+void Grafo<Element>::eliminarArco(Element v, Element w){
 
     if(!g) return;  // Caso de que el grafo este vacio
 
@@ -473,7 +397,7 @@ void Graph<Element>::eliminarArco(Element v, Element w){
 }
 
 template <typename Element>
-inline bool Graph<Element>::verticeExiste(Element v)
+inline bool Grafo<Element>::existeVertice(Element v)
 {
     bool encontrado = false;
     if(!g) return encontrado;    // Devuelve falso si el grafo es vacio
@@ -491,7 +415,7 @@ inline bool Graph<Element>::verticeExiste(Element v)
 }
 
 template <typename Element>
-inline bool Graph<Element>::arcoExiste(Element v, Element w)
+inline bool Grafo<Element>::existeArco(Element v, Element w)
 {
     if(!g)  return false;   // Grafo vacio
 
@@ -526,7 +450,7 @@ inline bool Graph<Element>::arcoExiste(Element v, Element w)
 }
 
 template <typename Element>
-float Graph<Element>::getPesoArco(Element v, Element w)  // Encontrar el peso del arco existente de V -> W
+float Grafo<Element>::getPesoArco(Element v, Element w)  // Encontrar el peso del arco existente de V -> W
 {
     if(!g)  return false;   // Grafo vacio
 
@@ -548,7 +472,7 @@ float Graph<Element>::getPesoArco(Element v, Element w)  // Encontrar el peso de
         // Apuntamos el primer arco de la lista
         iterAd = iterVer->getListaAdyacencia();
 
-        while(iterAd && iterAd->getInfo()->getInfo() != w)  // Buscar ese arco apuntando
+        while(iterAd && iterAd->getInfo()->getInfo() == w)  // Buscar ese arco apuntando
             iterAd = iterAd->getProximoNodo();
 
         if(iterAd)  // Preguntar si fue encontrado
@@ -563,13 +487,13 @@ float Graph<Element>::getPesoArco(Element v, Element w)  // Encontrar el peso de
 }
 
 template <typename Element>
-inline int Graph<Element>::orden()
+inline int Grafo<Element>::orden()
 {
     return nVertices;
 }
 
 template <typename Element>
-list<Element> Graph<Element>::predecesores(Element e)
+list<Element> Grafo<Element>::predecesores(Element e)
 {
     if(!g) return list<Element>();    // Devuelve una lista vacia en caso de ser un grafo vacio
 
@@ -603,7 +527,7 @@ list<Element> Graph<Element>::predecesores(Element e)
 }
 
 template <typename Element>
-list<Element> Graph<Element>::sucesores(Element e){
+list<Element> Grafo<Element>::sucesores(Element e){
     // Creamos una lista vacia
     list<Element> result;
 
@@ -631,7 +555,7 @@ list<Element> Graph<Element>::sucesores(Element e){
 }
 
 template <typename Element>
-inline list<Element> Graph<Element>::getVecinos(Element e)
+inline list<Element> Grafo<Element>::getVecinos(Element e)
 {
     list<Element> vecinos;
     bool insertadosAntes[nVertices];
@@ -679,7 +603,7 @@ inline list<Element> Graph<Element>::getVecinos(Element e)
 }
 
 template <typename Element>
-list<Element> Graph<Element>::getVertices(){
+list<Element> Grafo<Element>::getVertices(){
     VerticeNode<Element> *act=this->g;
     list<Element> vertices;
     //recorre todos los vertices del grafo
@@ -692,7 +616,7 @@ list<Element> Graph<Element>::getVertices(){
 }
 
 template <typename Element>
-map<int,Element> Graph<Element>::getMapVertices(){
+map<int,Element> Grafo<Element>::getMapVertices(){
     map<int,Element> mapa;
     VerticeNode<Element> *act=g;
     int i=0;
@@ -706,11 +630,11 @@ map<int,Element> Graph<Element>::getMapVertices(){
     return mapa;
 }
 template <typename Element>
-Graph<int> Graph<Element>::getMapGrafo(){
+Grafo<int> Grafo<Element>::getMapGrafo(){
     VerticeNode<Element> *act=g;
     ArcNode<Element> *adyAct;
     map<VerticeNode<Element>*,int> mapa;
-    Graph<int> grafo;
+    Grafo<int> grafo;
     int i=0;
     
     //crea los vertices mapeados del grafo
@@ -728,35 +652,15 @@ Graph<int> Graph<Element>::getMapGrafo(){
         adyAct=act->getListaAdyacencia();
         while (adyAct)  //recorre todos los arcos de los vertices
         {
-            grafo.addArco(mapa[act],mapa[adyAct->getInfo()],this->getPesoArco(act->getInfo(),adyAct->getInfo()->getInfo()));    //crea el arco mapeado
+            grafo.agregarArco(mapa[act],mapa[adyAct->getInfo()],this->getPesoArco(act->getInfo(),adyAct->getInfo()->getInfo()));    //crea el arco mapeado
             adyAct=adyAct->getProximoNodo();
         }
         act=act->getProximoNodo();
     }
     return grafo;
 }
-
 template <typename Element>
-void Graph<Element>::dfs(Graph<int> &g, int inicial, bool visitados[], list<int> &result)
-{
-    if(!visitados[inicial]){
-        // Guardamos en la lista
-        result.push_back(inicial);
-        // marcamos como visitado en el array
-        visitados[inicial] = true;
-
-        list<int> sucesores = g.sucesores(inicial);
-
-        // iteramos en la lista de adyacencia
-        while(!sucesores.empty()){
-            dfs(g,sucesores.front(),visitados,result);
-            sucesores.pop_front();
-        }
-    }
-}
-
-template <typename Element>
-inline list<list<Element> > Graph<Element>::getArcos()
+inline list<list<Element> > Grafo<Element>::getArcos()
 {
     //  Para guardar los arcos utilizare una clase llamada pair, esta clase guarda los
     // pares de vertices que son conectadas por el mismo arco, es una clase que sera de
@@ -783,35 +687,76 @@ inline list<list<Element> > Graph<Element>::getArcos()
 
     return arcos;
 }
-
-template <typename Element>
-list<Element> Graph<Element>::dfs()
-{
-    Graph<int> grafoMapeado = this->getMapGrafo();  // obtenemos la version del grafo pero mapeado
-    map<int,Element> dic = this->getMapVertices();  // el diccionario de las vertices para el grafo mapeado
-
-    // listas
-    list<int> listaMapeada; // lista donde se pasa por referencia en el dfs
-    list<Element> result;   // lista resultante
-
-    // el arreglo de visitados
-    bool visitados[grafoMapeado.orden()];
-
-    // e inicializamos el arreglo en falso
-    for(int i =0; i < grafoMapeado.orden() ; i++)
-        visitados[i] = false;  
-
-
-    // aplicamos busquedad profunda en el grafo mapeado
-    dfs(grafoMapeado,grafoMapeado.getFuente(),visitados,listaMapeada);
-
-    // una ves terminado el dfs, procesamos la listaMapeada para la lista result
-
-    while(!listaMapeada.empty()){
-        result.push_back(dic[listaMapeada.front()]);    // se insertara el contenido de la clave del diccionario
-        listaMapeada.pop_front();
+template<typename Element>
+list<int> Grafo<Element>::BFS(Grafo<int> &g){
+    list<int> recorrido;
+    vector<bool> visitados(g.orden(), false);
+    
+    for(int i = 0; i < g.orden(); i++){
+        if(!visitados[i])
+            BFS(g, visitados, recorrido, i);
     }
-    return result;
+    return recorrido;
 }
+
+template<typename Element>
+void Grafo<Element>::BFS(Grafo<int> &g, vector<bool> &visitados, list<int> &recorrido, int nodoInicial){
+    queue<int> c;
+    list<int> sucesores;
+    int v, m;
+
+    visitados[nodoInicial] = true; 
+    c.push(nodoInicial);
+
+    while(!c.empty()){
+        v = c.front();
+        c.pop();
+
+        recorrido.push_back(v);
+        sucesores = g.sucesores(v);
+
+        while(!sucesores.empty()){
+            m = sucesores.front();    
+            if(!visitados[m]){  
+                visitados[m] = true;
+                c.push(m);
+            }
+            sucesores.pop_front();
+        }
+    }
+}
+template<typename Element>
+list<int> Grafo<Element>::DFS(Grafo<int> &g){
+    list<int> recorrido;
+    bool visitados[g.orden()];
+
+    for(int i = 0; i < g.orden(); i++)
+        visitados[i] = false;   // Llenamos el vector de falsos
+
+    DFS(g,g.getFuente(),recorrido,visitados); // Opera la funcion recursiva
+
+    return recorrido;
+}
+template<typename Element>
+void Grafo<Element>::DFS(Grafo<int> &g, int fuente, list<int> &recorrido, bool *visitados){
+    list<int> sucesores;
+    if(!visitados[fuente-1]){
+        int i;
+
+        // Estamos en el recorrido del nodo actual, asi que
+        visitados[fuente-1] = true; // se tacha como nodo recorrido
+        recorrido.push_back(fuente);    // inserta la fuente en la lista de recorridos
+
+        // tomamos los sucesores de la fuente
+        sucesores = g.sucesores(fuente);
+
+        while(!sucesores.empty()){
+            DFS(g,sucesores.front(),recorrido,visitados);   // Recursion al primer elemento de los sucesores del siguiente sucesor
+            sucesores.pop_front();  // Eliminamos ese sucesor
+        }   
+    }
+}
+
+
 #endif
 
