@@ -25,14 +25,18 @@ int main(){
         grafoActual.agregarArco(a,b,0);
     }
 
-    GrafoNoDirigido<int> grafoMapeado = grafoActual.getMapGrafo();
-
-    map<char,int> diccionario = grafoActual.getMapVerticesInvertido();
-    map<int,char> traductor = grafoActual.getMapVertices();
-
-    for(const auto&n : caminoMasCortoIntermedio(grafoMapeado,diccionario[inicio],diccionario[fin],diccionario[intermedio])){
-        cout<<traductor[n]<<" ";
+    // Probando dfs
+    cout<<"BFS = [";
+    for(const auto&n : grafoActual.BFS()){
+        cout<<n<<",";
     }
+    cout<<"]\n";
+
+    cout<<"DFS = [";
+    for(const auto &n : grafoActual.DFS()){
+        cout<<n<<",";
+    }
+    cout<<"]\n";
     return 0;
 }
 

@@ -25,8 +25,9 @@ class Grafo{
 
     private:
         NodoVertice<Element> *getVerticeInicia(){return g;}
-        void DFS(Grafo<int> &g, int fuente, list<int> &recorrido, bool *visitados);
-        void BFS(Grafo<int> &g, vector<bool> &visitados, list<int> &recorrido, int nodoInicial);
+        void DFS(NodoVertice<Element>* inicio, list<Element> &recorrido, map<NodoVertice<Element>*,bool> &visitados);
+        // void DFS(Grafo<int> &g, int fuente, list<int> &recorrido, bool *visitados);
+        // void BFS(Grafo<int> &g, vector<bool> &visitados, list<int> &recorrido, int nodoInicial);
     public:
         // Este metodo puede utilizarse sin instanciar un objeto
         // Esta funcion sirve para mapear los datos de un diccionario, permitiendo asi la facilidad de controlar los recorridos del grafo
@@ -61,8 +62,10 @@ class Grafo{
         map<int,Element> getMapVertices(); //O(n)  retorna un mapa con un mapeo de los vertices
         map<Element,int> getMapVerticesInvertido(); // Retorna el mapar pero clave =Element : contenido = numero
         Grafo<int> getMapGrafo(); //retorna un el mismo grafo con valores mapeados
-        list<int> BFS(Grafo<int> &g);
-        list<int> DFS(Grafo<int> &g);    
+        // list<int> BFS(Grafo<int> &g);
+        // list<int> DFS(Grafo<int> &g);  
+        list<Element> BFS();    // Versiones optimas de los recorridos, recorrido por ondas
+        list<Element> DFS();    // Recorrido por profundidad
         int getGradoSalida(Element v);              //retorna el grado de salida (numero de arcos que apuntan a otros Vertices)
         int getGradoEntrada(Element v);             //Retorna el grado de entrada (numnero de arcos que apuntan al Vertice)
 
@@ -427,7 +430,7 @@ inline void Grafo<Element>::eliminarVertice(Element v)
         }else{
             g->setProximoNodo(iterador->getProximoNodo());
         }
-        // Eliminamos la vertice(el metodo destructor de la clase VerticeNode esta programado para eliminar tanto los nodos adyacentes como el mismo)
+        // Eliminamos la vertice(el metodo destructor de la clase NodoVertice esta programado para eliminar tanto los nodos adyacentes como el mismo)
         // con ello, se elimina los sucesores
         delete del; // liberamos memoria
 
@@ -772,11 +775,76 @@ inline list<list<Element> > Grafo<Element>::getArcos()
 
     return arcos;
 }
+
+template <typename Element>
+inline list<Element> Grafo<Element>::BFS()
+{
+    queue<NodoVertice<Element>* > recorrido;    // cola de punteros
+    list<Element> resultado;    // El resultado
+    NodoVertice<Element> *iteradorVertices;
+    NodoArco<Element> *iteradorVecinos;
+
+    map<NodoVertice<Element>*,bool> visitados;  // El diccionario para las vertices visitadas
+
+    // Inicializamos el diccionario
+    // itera sobre la lista de los vertices primero
+    iteradorVertices = g;
+    while(iteradorVertices){
+        visitados[iteradorVertices] = false;
+        iteradorVertices = iteradorVertices->getProximoNodo();
+    }
+
+    // una vez inicializada, encolamos el primer nodo y le inidicamos que ya fue visitado
+    visitados[g] = true;
+    recorrido.push(g);
+
+    while(!recorrido.empty()){
+        iteradorVertices = recorrido.front();
+        resultado.push_back(iteradorVertices->getInfo());
+        recorrido.pop();
+
+        // visitamos los vecinos
+
+        iteradorVecinos = iteradorVertices->getListaAdyacencia();
+        while(iteradorVecinos){
+            if(!visitados[iteradorVecinos->getInfo()]){
+                recorrido.push(iteradorVecinos->getInfo());
+                visitados[iteradorVecinos->getInfo()] = true;
+            }
+            iteradorVecinos = iteradorVecinos->getProximoNodo();
+        }
+    }
+
+    return resultado;
+}
+
+template <typename Element>
+inline list<Element> Grafo<Element>::DFS()
+{
+    list<Element> resultado;
+    NodoVertice<Element> *iterVer = g;
+
+    map<NodoVertice<Element>*,bool> visitados;
+
+    // inicializamos el mapa
+
+    while(iterVer){
+        visitados[iterVer] = false;
+        iterVer = iterVer->getProximoNodo();
+    }
+
+    // Cargamos el metodo recursivo
+    DFS(g,resultado,visitados);
+
+    return resultado;
+}
+
+/*
 template<typename Element>
 list<int> Grafo<Element>::BFS(Grafo<int> &g){
     list<int> recorrido;
     vector<bool> visitados(g.getNVertices(), false);
-    
+
     for(int i = 0; i < g.getNVertices(); i++){
         if(!visitados[i])
             BFS(g, visitados, recorrido, i);
@@ -790,7 +858,7 @@ void Grafo<Element>::BFS(Grafo<int> &g, vector<bool> &visitados, list<int> &reco
     list<int> sucesores;
     int v, m;
 
-    visitados[nodoInicial] = true; 
+    visitados[nodoInicial] = true;
     c.push(nodoInicial);
 
     while(!c.empty()){
@@ -801,8 +869,8 @@ void Grafo<Element>::BFS(Grafo<int> &g, vector<bool> &visitados, list<int> &reco
         sucesores = g.sucesores(v);
 
         while(!sucesores.empty()){
-            m = sucesores.front();    
-            if(!visitados[m]){  
+            m = sucesores.front();
+            if(!visitados[m]){
                 visitados[m] = true;
                 c.push(m);
             }
@@ -838,14 +906,14 @@ void Grafo<Element>::DFS(Grafo<int> &g, int fuente, list<int> &recorrido, bool *
         while(!sucesores.empty()){
             DFS(g,sucesores.front(),recorrido,visitados);   // Recursion al primer elemento de los sucesores del siguiente sucesor
             sucesores.pop_front();  // Eliminamos ese sucesor
-        }   
+        }
     }
 }
-
+*/
 template <typename Element>
 int Grafo<Element>::getGradoSalida(Element v){
-    VerticeNode<Element>* act;
-    ArcNode<Element>* arcoAct;
+    NodoVertice<Element>* act;
+    NodoArco<Element>* arcoAct;
     int grado=0;
     //itera hasta encontrar el vercice v
     act=g;
@@ -871,8 +939,8 @@ int Grafo<Element>::getGradoSalida(Element v){
 }
 template <typename Element>
 int Grafo<Element>::getGradoEntrada(Element v){
-    VerticeNode<Element>* act;
-    ArcNode<Element>* arcoAct;
+    NodoVertice<Element>* act;
+    NodoArco<Element>* arcoAct;
     int grado=0;
     bool found;
 
@@ -919,7 +987,7 @@ inline map<Element, int> Grafo<Element>::getMapVerticesInvertido()
 {
     map<Element,int> diccionario;
 
-    VerticeNode<Element> *iterarVertices = g;
+    NodoVertice<Element> *iterarVertices = g;
     int i = 0;
     while(iterarVertices){
         diccionario[iterarVertices->getInfo()] = i;
@@ -929,6 +997,22 @@ inline map<Element, int> Grafo<Element>::getMapVerticesInvertido()
 
     return diccionario;
 }
+template <typename Element>
+inline void Grafo<Element>::DFS(NodoVertice<Element> *inicio, list<Element> &recorrido, map<NodoVertice<Element>*, bool> &visitados)
+{
+    if(!visitados[inicio]){
+        recorrido.push_back(inicio->getInfo()); // Guardamos el la lista resultante
+        visitados[inicio] = true;  // marcamos como ya visitado
+
+        NodoArco<Element> *vecinos = inicio->getListaAdyacencia();  // Iteramos en la lista de adyacencia
+
+        while(vecinos){
+            DFS(vecinos->getInfo(),recorrido,visitados);   // recursion hacia el siguiente vecino
+            vecinos = vecinos->getProximoNodo();
+        }
+    }
+}
 
 
 #endif
+
