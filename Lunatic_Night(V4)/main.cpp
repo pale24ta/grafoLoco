@@ -10,9 +10,9 @@
 using namespace std;
 
 int main(){
-    Graph<char> g;
+    Grafo<char> g;
 
-    UndirectedGraph<char> ng;
+    GrafoNoDirigido<char> ng;
     char v,w;
     int i=0;
     while (cin>> v >> w)
@@ -27,7 +27,7 @@ int main(){
     cout<<"Grado de  entrada de a: "<<g.getGradoEntrada('A')<<endl;
     cout<<"Tiene "<<g.getNVertices()<<" Vertives y "<<g.getMArcos()<<" Arcos."<<endl;
 
-    /*Graph<char> t(g);
+    /*Grafo<char> t(g);
     if(t.getMArcos()==g.getMArcos())
         cout<<"merequetengue"<<endl;*/
     //sin mapear
@@ -40,7 +40,7 @@ int main(){
     cout<<endl;
 
     //mapeado
-    Graph<int> gMap=g.getMapGrafo();
+    Grafo<int> gMap=g.getMapGrafo();
     list<int> mapa=gMap.getVertices();
     cout<<"Mapa: ";
     for (int e : mapa)
