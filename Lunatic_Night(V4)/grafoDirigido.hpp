@@ -46,10 +46,11 @@ class Grafo{
         virtual void agregarArco(Element v, Element w);             // Crea un arco con peso 1
         void eliminarVertice(Element v);      // Buscar el vertice y eliminarlo (eso implica tambien eliminar o destruir sus arcos) O(n + m)
         virtual void eliminarArco(Element v,Element w);     // Eliminar el arco es buscar el vertice inicial y luego el vertice correspondiente O(n + m)
-        bool existeVertice(Element v);    // Buscar el elemento en la lista de vertices, la lista en casos generales se encontrara desordenada, asi que la forma mas viables es iterar en ella, O(n)
+        bool existeVertice(Element v);    // Buscar el elemento en la lista de vertices, la lista en casos generales se encontrara desgetNVerticesada, asi que la forma mas viables es iterar en ella, O(n)
         bool existeArco(Element v, Element w);  // Buscar el vertice de adyacencia, primero buscar la vertice para luego buscar su arco O(n + m)
         float getPesoArco(Element v, Element w);   // O(n + m)
-        int orden(); // Consultar el numero de vertices, O(1)
+        int getNVertices(); // Consultar el numero de vertices, O(1)
+        int getMArcos();    // Consultar el numero de arcos, O(1)
         list<Element> predecesores(Element e); // Conocer los predecesores (los que le envian la informacion a una vertice especifica) O(n + m)
         list<Element> sucesores(Element e); // O(n + m), simplemente devuelve la lista de los arcos del vertice
         list<Element> getVecinos(Element e);
@@ -488,9 +489,15 @@ float Grafo<Element>::getPesoArco(Element v, Element w)  // Encontrar el peso de
 }
 
 template <typename Element>
-inline int Grafo<Element>::orden()
+inline int Grafo<Element>::getNVertices()
 {
     return nVertices;
+}
+
+template <typename Element>
+inline int Grafo<Element>::getMArcos()
+{
+    return mArcos;
 }
 
 template <typename Element>
@@ -691,9 +698,9 @@ inline list<list<Element> > Grafo<Element>::getArcos()
 template<typename Element>
 list<int> Grafo<Element>::BFS(Grafo<int> &g){
     list<int> recorrido;
-    vector<bool> visitados(g.orden(), false);
+    vector<bool> visitados(g.getNVertices(), false);
     
-    for(int i = 0; i < g.orden(); i++){
+    for(int i = 0; i < g.getNVertices(); i++){
         if(!visitados[i])
             BFS(g, visitados, recorrido, i);
     }
@@ -729,9 +736,9 @@ void Grafo<Element>::BFS(Grafo<int> &g, vector<bool> &visitados, list<int> &reco
 template<typename Element>
 list<int> Grafo<Element>::DFS(Grafo<int> &g){
     list<int> recorrido;
-    bool visitados[g.orden()];
+    bool visitados[g.getNVertices()];
 
-    for(int i = 0; i < g.orden(); i++)
+    for(int i = 0; i < g.getNVertices(); i++)
         visitados[i] = false;   // Llenamos el vector de falsos
 
     DFS(g,g.getFuente(),recorrido,visitados); // Opera la funcion recursiva
