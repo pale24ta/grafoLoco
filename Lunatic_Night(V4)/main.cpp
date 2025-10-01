@@ -9,84 +9,118 @@
 
 using namespace std;
 
+
+list<int> caminoMasCortoIntermedio(GrafoNoDirigido<int> &g, int a, int b, int intermedio);
+
 int main(){
-    Grafo<char> g;
 
-    GrafoNoDirigido<char> ng;
-    char v,w;
-    int i=0;
-    while (cin>> v >> w)
-    {
-        i++;
-        g.agregarArco(v,w,i);
-        ng.agregarArco(v,w,i);
-        
+    GrafoNoDirigido<char> grafoActual;
+
+    char a,b,inicio,fin,intermedio;
+
+    ifstream in("in.txt");
+
+    in >> inicio >> fin >> intermedio;
+    while(in >> a >> b){
+        grafoActual.agregarArco(a,b,0);
     }
 
-    cout<<"Grado de  salida de a: "<<g.getGradoSalida('A')<<endl;
-    cout<<"Grado de  entrada de a: "<<g.getGradoEntrada('A')<<endl;
-    cout<<"Tiene "<<g.getNVertices()<<" Vertives y "<<g.getMArcos()<<" Arcos."<<endl;
+    GrafoNoDirigido<int> grafoMapeado = grafoActual.getMapGrafo();
 
-    /*Grafo<char> t(g);
-    if(t.getMArcos()==g.getMArcos())
-        cout<<"merequetengue"<<endl;*/
-    //sin mapear
-    cout<<"Vertices: ";
-    list<char> vertices=g.getVertices();
-    for (char e : vertices)
-    {
-        cout<< e << ", ";
-    }
-    cout<<endl;
+    map<char,int> diccionario = grafoActual.getMapVerticesInvertido();
+    map<int,char> traductor = grafoActual.getMapVertices();
 
-    //mapeado
-    Grafo<int> gMap=g.getMapGrafo();
-    list<int> mapa=gMap.getVertices();
-    cout<<"Mapa: ";
-    for (int e : mapa)
-    {
-        cout<< e << ", ";
+    for(const auto&n : caminoMasCortoIntermedio(grafoMapeado,diccionario[inicio],diccionario[fin],diccionario[intermedio])){
+        cout<<traductor[n]<<" ";
     }
-    cout<<endl;
-    //Arcos sin mapear
-    list<list<char>> arcos=g.getArcos();
-    float peso;
-    char from,to;
-    for (list<char> par: arcos)
-    {
-        from=par.front();
-        to=par.back();
-        cout<<"(";
-        for (char e : par)
-        {
-            cout<<e<<" ";
-            
-        }
-        peso=g.getPesoArco(from,to);
-        cout<<")= "<<peso<<endl;
-    }
-    cout<<endl;
-
-    //arcos mapeados
-    list<list<int>> arcosMap=gMap.getArcos();
-    for (list<int> par: arcosMap)
-    {
-        cout<<"(";
-        for (int e : par)
-        {
-            cout<<e<<" ";
-        }
-        peso=gMap.getPesoArco(par.front(),par.back());
-        cout<<")= "<<peso<<endl;
-    }
-
-    //TEST Grafo no dirigido
-    vertices=ng.getVertices();
-    for (char e : vertices)
-    {
-        cout<< e << ", ";
-    }
-    cout<<endl;
-
     return 0;
+}
+
+
+list<int> caminoMasCortoIntermedio(GrafoNoDirigido<int> &g, int a, int b, int intermedio){
+    // Usaremos el bfs
+
+    list<int> vecinos;
+    queue<int> recorridoA,recorridoB;
+    list<int> resultado;
+    bool visitados[g.getNVertices()];
+    // int distancias[g.getNVertices()];
+    int previos[g.getNVertices()];
+
+    int v,w;
+    // int distanciaActual = 0;
+
+
+    bool intermedioEncontrado = false;
+    bool finalEncontrado =false;
+    // inicializamos los booleanos y distancias
+
+    for(int i = 0; i < g.getNVertices() ; i++){
+        visitados[i] = false;
+        // distancias[i] = 0;
+        previos[i] = -1;
+    }
+
+    // Si alguna de las vertices no existe, devuelve la lista vacia
+    if(!g.existeVertice(a) || !g.existeVertice(b) || !g.existeVertice(intermedio) || (a == b)) return resultado;
+    
+    // inciamos con el primero
+    visitados[a] = true;
+    // distancias[a] = 0;
+    recorridoA.push(a);
+
+
+
+    while((!recorridoA.empty() || !recorridoB.empty()) && !finalEncontrado){
+
+        if(intermedioEncontrado){
+            v = recorridoB.front();
+            recorridoB.pop();
+        }else{
+            v = recorridoA.front();
+            recorridoA.pop();
+        }
+        // distanciaActual += distancias[v];    // la distancia actual se suma con la distancia de ese vector registrada
+        // anteriormente
+
+        // Revisamos los vecinos
+        vecinos = g.getVecinos(v);
+        while(!vecinos.empty()){
+            w = vecinos.front();
+            vecinos.pop_front();
+
+            if(!visitados[w]){
+
+                // Revisamos si hay un vecino disponible
+                if(w == intermedio){
+                    intermedioEncontrado = true;
+                }
+                if(intermedioEncontrado && w == b){
+                    finalEncontrado = true;
+                }
+
+                visitados[w] = true;
+
+                if(intermedioEncontrado){
+                    recorridoB.push(w);
+                }else{
+                    recorridoA.push(w);
+                }
+                previos[w] = v;
+            }
+        }
+    }
+
+
+    // iteramos en la lista de los previos
+
+    resultado.push_front(b);
+    int i = b;
+    while(i != a){
+        resultado.push_front(previos[i]);
+        i = previos[i];
+    }
+    // resultado.push_back(a);
+
+    return resultado;
 }

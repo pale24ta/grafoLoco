@@ -59,6 +59,7 @@ class Grafo{
         list<Element> getVertices(); //O(n)retorna una lista con los vertices del grafo
         virtual list<list<Element> > getArcos();    // Devuelve la lista de arcos del grafo
         map<int,Element> getMapVertices(); //O(n)  retorna un mapa con un mapeo de los vertices
+        map<Element,int> getMapVerticesInvertido(); // Retorna el mapar pero clave =Element : contenido = numero
         Grafo<int> getMapGrafo(); //retorna un el mismo grafo con valores mapeados
         list<int> BFS(Grafo<int> &g);
         list<int> DFS(Grafo<int> &g);    
@@ -426,7 +427,7 @@ inline void Grafo<Element>::eliminarVertice(Element v)
         }else{
             g->setProximoNodo(iterador->getProximoNodo());
         }
-        // Eliminamos la vertice(el metodo destructor de la clase nodoVertice esta programado para eliminar tanto los nodos adyacentes como el mismo)
+        // Eliminamos la vertice(el metodo destructor de la clase VerticeNode esta programado para eliminar tanto los nodos adyacentes como el mismo)
         // con ello, se elimina los sucesores
         delete del; // liberamos memoria
 
@@ -843,8 +844,8 @@ void Grafo<Element>::DFS(Grafo<int> &g, int fuente, list<int> &recorrido, bool *
 
 template <typename Element>
 int Grafo<Element>::getGradoSalida(Element v){
-    NodoVertice<Element>* act;
-    NodoArco<Element>* arcoAct;
+    VerticeNode<Element>* act;
+    ArcNode<Element>* arcoAct;
     int grado=0;
     //itera hasta encontrar el vercice v
     act=g;
@@ -870,8 +871,8 @@ int Grafo<Element>::getGradoSalida(Element v){
 }
 template <typename Element>
 int Grafo<Element>::getGradoEntrada(Element v){
-    NodoVertice<Element>* act;
-    NodoArco<Element>* arcoAct;
+    VerticeNode<Element>* act;
+    ArcNode<Element>* arcoAct;
     int grado=0;
     bool found;
 
@@ -913,6 +914,21 @@ int Grafo<Element>::getGradoEntrada(Element v){
     return grado;
 }
 
+template <typename Element>
+inline map<Element, int> Grafo<Element>::getMapVerticesInvertido()
+{
+    map<Element,int> diccionario;
+
+    VerticeNode<Element> *iterarVertices = g;
+    int i = 0;
+    while(iterarVertices){
+        diccionario[iterarVertices->getInfo()] = i;
+        iterarVertices = iterarVertices->getProximoNodo();
+        i += 1;
+    }
+
+    return diccionario;
+}
+
 
 #endif
-

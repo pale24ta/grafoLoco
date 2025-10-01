@@ -1,5 +1,13 @@
+A J E
 A B
 A C
-B C
-C D
+B D
+C E
 D E
+D F
+E F
+G H
+H I
+I J
+B E
+F G
