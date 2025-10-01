@@ -547,7 +547,7 @@ float Grafo<Element>::getPesoArco(Element v, Element w)  // Encontrar el peso de
         // Apuntamos el primer arco de la lista
         iterAd = iterVer->getListaAdyacencia();
 
-        while(iterAd && iterAd->getInfo()->getInfo() == w)  // Buscar ese arco apuntando
+        while(iterAd && iterAd->getInfo()->getInfo() != w)  // Buscar ese arco apuntando
             iterAd = iterAd->getProximoNodo();
 
         if(iterAd)  // Preguntar si fue encontrado
