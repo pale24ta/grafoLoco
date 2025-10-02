@@ -28,8 +28,6 @@ class Grafo{
         void DFS(NodoVertice<Element>* inicio, list<Element> &recorrido, map<NodoVertice<Element>*,bool> &visitados);
         // void DFS(Grafo<int> &g, int fuente, list<int> &recorrido, bool *visitados);
         // void BFS(Grafo<int> &g, vector<bool> &visitados, list<int> &recorrido, int nodoInicial);
-        void DFS(Grafo<int> &g, int fuente, list<int> &recorrido, bool *visitados);
-        void BFS(Grafo<int> &g, vector<bool> &visitados, list<int> &recorrido, int nodoInicial);
         void compConexDFS(map<NodoVertice<Element>*,bool> &visistados,list<Element> &compConexa,NodoVertice<Element>* inicial); //busca recursivamente elementos de una componente conexa
         void compConexDFS(map<NodoVertice<Element>*,bool> &visistados,NodoVertice<Element>* inicial);
     private:
