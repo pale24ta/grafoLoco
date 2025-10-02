@@ -92,7 +92,7 @@ class Grafo{
 template <typename Element>
 inline void Grafo<Element>::vaciar()
 {
-    if(nVertices == 0) return;  // No puede vaciar un grafo vacio
+    if(nVertices == 0  || !g) return;  // No puede vaciar un grafo vacio
 
     NodoVertice<Element> *iterVer = g, *del = NULL;    // Empezamos en el nodo fuente
 
