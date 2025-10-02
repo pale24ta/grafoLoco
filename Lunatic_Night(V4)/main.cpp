@@ -15,7 +15,7 @@ list<int> caminoMasCortoIntermedio(GrafoNoDirigido<int> &g, int a, int b, int in
 int main(){
 
     GrafoNoDirigido<char> ng;
-    Grafo<char> g;
+    Grafo<char> g,g2;
     char v,w;
     int i=0;
     while (cin>> v >> w)
@@ -23,12 +23,15 @@ int main(){
         i++;
         g.agregarArco(v,w,i);
         ng.agregarArco(v,w,i);
-        
+        g2.agregarArco(v,w,i);
     }
     g.agregarVertice('Z');
+    //g2.agregarVertice('Z');
     ng.agregarVertice('Z');
     //g.vaciar();
     //ng.vaciar();
+
+    cout<< (g==g2? "Son Iguales":"No Son Iguales")<<endl;
 
     cout<<"Grado de  salida de a: "<<g.getGradoSalida('A')<<endl;
     cout<<"Grado de  entrada de a: "<<g.getGradoEntrada('A')<<endl;

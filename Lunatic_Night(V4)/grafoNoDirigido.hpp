@@ -1,4 +1,4 @@
-#ifndef GRAFONODIR
+#ifndef GRAFONODIR 
 #define GRAFONODIR
 
 #include "nodoGrafo.hpp"
@@ -39,7 +39,7 @@ GrafoNoDirigido<Element>::GrafoNoDirigido(const GrafoNoDirigido &target):Grafo<E
 
 template <typename Element>
 GrafoNoDirigido<Element>::~GrafoNoDirigido(){
-    this->vaciarGrafo();
+    this->vaciar();
     this->g = NULL;
     this->mArcos = 0;
     this->nVertices = 0;

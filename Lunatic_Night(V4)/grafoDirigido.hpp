@@ -84,6 +84,8 @@ class Grafo{
         int getNumCompConexas();                   //retorna el numero de componentes conexas que posee el grafo
         static unordered_map<int, list<int> > mapearDiccionario(unordered_map<Element, list<Element> > diccionario, unordered_map<Element,int> &mapaComp);    // Metodo funcion que servira para mapear diccionarios y que tenga facil acceso a la hora de procesarlos
 
+        //Operadores
+        bool operator==(const Grafo<Element> &grafo);
 };
 
 
@@ -999,21 +1001,6 @@ int Grafo<Element>::getGradoEntrada(Element v){
 }
 
 template <typename Element>
-inline map<Element, int> Grafo<Element>::getMapVerticesInvertido()
-{
-    map<Element,int> diccionario;
-
-    NodoVertice<Element> *iterarVertices = g;
-    int i = 0;
-    while(iterarVertices){
-        diccionario[iterarVertices->getInfo()] = i;
-        iterarVertices = iterarVertices->getProximoNodo();
-        i += 1;
-    }
-
-    return diccionario;
-}
-template <typename Element>
 inline void Grafo<Element>::DFS(NodoVertice<Element> *inicio, list<Element> &recorrido, map<NodoVertice<Element>*, bool> &visitados)
 {
     if(!visitados[inicio]){
@@ -1137,6 +1124,46 @@ void Grafo<Element>::compConexDFS(map<NodoVertice<Element>*,bool> &visistados,No
     }
     
 }
+template <typename Element>
+bool Grafo<Element>::operator==(const Grafo<Element> &grafo){
+    if (nVertices != grafo.nVertices || mArcos!=grafo.mArcos)   //Si el numero de vertices o de arcos no concuerdan, entonces son grafos distintos
+        return false;
+    
+    NodoVertice<Element>*i,*j;       //Variables que iteran sobre los vertices
+    NodoArco<Element>*arcoActI,*arcoActJ;//Variables que iteran sobre los arcos
+    //queue<NodoVertice<Element>*> vertices,vertices2;
+    //bool igual=true;
 
+    
+    for (i = g; i ; i=i->getProximoNodo())       //Ciclo principal que itera sobre los vertices del grafo instanciado
+    {
+        for ( j = grafo.g; j !=NULL && j->getInfo()!=i->getInfo(); j=j->getProximoNodo())    //ciclo que itera sobre el grafo comparado
+        {
+            /* code */
+        }
+        
+        if (j==NULL)    //si no se encontro el vertice i en el grafo comparado, entonces ambos grafos son distintos
+        {
+            return false;
+        }
+
+        for ( arcoActI=i->getListaAdyacencia(); arcoActI!=NULL; arcoActI=arcoActI->getProximoNodo())  //Ciclo que itera sobre los arcos del grafo instanciado
+        {
+            for (arcoActJ=j->getListaAdyacencia(); arcoActJ != NULL && arcoActJ->getInfo()->getInfo()!=arcoActI->getInfo()->getInfo(); arcoActJ= arcoActJ->getProximoNodo())   //Ciclo que itera sobre los arcos del grafo comparado
+            {
+                /* code */
+            }
+            
+            if (arcoActJ==NULL)     //si no se encontro el arco i en el grafo comparado, entonces ambos grafos son distintos
+            {
+                return false;
+            }
+            
+        }
+        
+    }
+    
+    return true;
+}
 #endif
 
