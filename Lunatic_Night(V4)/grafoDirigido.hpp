@@ -27,6 +27,7 @@ class Grafo{
         void compConexDFS(map<NodoVertice<Element>*,bool> &visistados,list<Element> &compConexa,NodoVertice<Element>* inicial); //busca recursivamente elementos de una componente conexa
         void compConexDFS(map<NodoVertice<Element>*,bool> &visistados,NodoVertice<Element>* inicial);
         void DFS(NodoVertice<Element> *inicio, list<Element> &recorrido, map<NodoVertice<Element>*, bool> &visitados);
+
     private:
         NodoVertice<Element> *getVerticeInicia(){return g;}
         
@@ -35,48 +36,59 @@ class Grafo{
         // Esta funcion sirve para mapear los datos de un diccionario, permitiendo asi la facilidad de controlar los recorridos del grafo
         // la funcion retorna un diccionario [int,lista(int)] , recibira el mapa de con los datos orginales [Element, list(Element)] y otro dicionario que pasaremos por referencia
         // Debido a que lo estaremos utilizando para decodificar el mapeo o los resultados que nos deje el grafo [Element,int]
-        static unordered_map<int, list<int> > mapearDiccionario(unordered_map<Element, list<Element> > diccionario, unordered_map<Element,int> &mapaComp);    // Metodo funcion que servira para mapear diccionarios y que tenga facil acceso a la hora de procesarlos
-    
+        
+        //Constructores
         Grafo();    // Crea un grafo vacio
         ~Grafo();   // Destruye el grafo
         Grafo(const Grafo<Element> &target);  // Constructor copia
-        void vaciarGrafo(); // Vacia el grafo existente
-        Element getFuente();  // Devuelve el nodo inicial del grafo, es decir el atributo NodoVertice<Element> *g, pero en este caso, su elemento contenido en el 
-        bool esVacio();     // Metodo logico si el grafo no tiene nodos // O(1) porque solo se verifica los atributos nVertices
-        void addVertice(Element v);   // Anadir una vertice al principio de la vertice apuntada por el apuntador "g" de NodoVertice O(1)
 
+        //Getters
+        int getNVertices();     // Consultar el numero de vertices, O(1)
+        int getMArcos();        // Consultar el numero de arcos, O(1)
+        Element getFuente();    // Devuelve el nodo inicial del grafo, es decir el atributo NodoVertice<Element> *g, pero en este caso, su elemento contenido en el 
+        virtual list<list<Element> > getArcos();    // Devuelve la lista de arcos del grafo
+
+        //Setters
+
+        //Recorridos
+        list<Element> BFS();    // Versiones optimas de los recorridos, recorrido por ondas
+        list<Element> DFS();    // Recorrido por profundidad
+
+        //Basicos
         // Nodo: estos dos metodos que tienen virtual estan pensados para reinventarse en la clase hija de grafo, Grafo no dirigido
-        virtual void agregarArco(Element v, Element w, float c);    // Buscar el vertice 'v' en la lista de vertices y agregar un nodo de adyacencia a ese vertice para apuntar el vertice 'w', O(n)
-        virtual void agregarArco(Element v, Element w);             // Crea un arco con peso 1
-        void getReverse();  // Metodo para invertir los arcos de un grafo(Valido para grafo Dirigido)
-        void eliminarVertice(Element v);      // Buscar el vertice y eliminarlo (eso implica tambien eliminar o destruir sus arcos) O(n + m)
+        virtual void agregarArco(Element v, Element w, float c);// Buscar el vertice 'v' en la lista de vertices y agregar un nodo de adyacencia a ese vertice para apuntar el vertice 'w', O(n)
+        virtual void agregarArco(Element v, Element w);     // Crea un arco con peso 1
+        void agregarVertice(Element v);                     // Anadir una vertice al principio de la vertice apuntada por el apuntador "g" de NodoVertice O(1)
+        void eliminarVertice(Element v);                    // Buscar el vertice y eliminarlo (eso implica tambien eliminar o destruir sus arcos) O(n + m)
         virtual void eliminarArco(Element v,Element w);     // Eliminar el arco es buscar el vertice inicial y luego el vertice correspondiente O(n + m)
+        float getPesoArco(Element v, Element w);            // O(n + m)
+        list<Element> getPredecesores(Element e);           // Conocer los predecesores (los que le envian la informacion a una vertice especifica) O(n + m)
+        list<Element> getSucesores(Element e);              // O(n), simplemente devuelve la lista de los arcos del vertice
+        list<Element> getVecinos(Element e);                // 
+        list<Element> getVertices();                        // O(n)retorna una lista con los vertices del grafo
+
+        //Otros
+        void getReverse();      // Metodo para invertir los arcos de un grafo(Valido para grafo Dirigido)
+        void vaciar();          // Vacia el grafo existente
+        bool esVacio();         // Metodo logico si el grafo no tiene nodos // O(1) porque solo se verifica los atributos nVertices
         bool existeVertice(Element v);    // Buscar el elemento en la lista de vertices, la lista en casos generales se encontrara desgetNVerticesada, asi que la forma mas viables es iterar en ella, O(n)
         bool existeArco(Element v, Element w);  // Buscar el vertice de adyacencia, primero buscar la vertice para luego buscar su arco O(n + m)
-        float getPesoArco(Element v, Element w);   // O(n + m)
-        int getNVertices(); // Consultar el numero de vertices, O(1)
-        int getMArcos();    // Consultar el numero de arcos, O(1)
-        list<Element> getPredecesores(Element e); // Conocer los predecesores (los que le envian la informacion a una vertice especifica) O(n + m)
-        list<Element> getSucesores(Element e); // O(n), simplemente devuelve la lista de los arcos del vertice
-        list<Element> getVecinos(Element e);
-        list<Element> getVertices(); //O(n)retorna una lista con los vertices del grafo
-        virtual list<list<Element> > getArcos();    // Devuelve la lista de arcos del grafo
         map<int,Element> getMapVertices(); //O(n)  retorna un mapa con un mapeo de los vertices
         map<Element,int> getMapVerticesInvertido(); // Retorna el mapar pero clave =Element : contenido = numero
         Grafo<int> getMapGrafo(); //retorna un el mismo grafo con valores mapeados
         // list<int> BFS(Grafo<int> &g);
-        // list<int> DFS(Grafo<int> &g);  
-        list<Element> BFS();    // Versiones optimas de los recorridos, recorrido por ondas
-        list<Element> DFS();    // Recorrido por profundidad
+        // list<int> DFS(Grafo<int> &g);
         int getGradoSalida(Element v);              //retorna el grado de salida (numero de arcos que apuntan a otros Vertices)
         int getGradoEntrada(Element v);             //Retorna el grado de entrada (numnero de arcos que apuntan al Vertice)
         list<list<Element>> getCompConexas();      //retorna una lista de listas de componentes conexas
         int getNumCompConexas();                   //retorna el numero de componentes conexas que posee el grafo
+        static unordered_map<int, list<int> > mapearDiccionario(unordered_map<Element, list<Element> > diccionario, unordered_map<Element,int> &mapaComp);    // Metodo funcion que servira para mapear diccionarios y que tenga facil acceso a la hora de procesarlos
+
 };
 
 
 template <typename Element>
-inline void Grafo<Element>::vaciarGrafo()
+inline void Grafo<Element>::vaciar()
 {
     if(nVertices == 0) return;  // No puede vaciar un grafo vacio
 
@@ -151,7 +163,7 @@ Grafo<Element>::Grafo() : g(NULL), nVertices(0), mArcos(0)
 template <typename Element>
 inline Grafo<Element>::~Grafo()
 {
-    vaciarGrafo();  // Llama directamente al vaciarGrafo
+    vaciar();  // Llama directamente al vaciar
     g = NULL;
     nVertices = 0;
     mArcos = 0;
@@ -215,7 +227,7 @@ bool Grafo<Element>::esVacio()
 }
 
 template <typename Element>
-void Grafo<Element>::addVertice(Element v)
+void Grafo<Element>::agregarVertice(Element v)
 {
     // Anadiremos el vertice la principio de la lista de grafos
 
@@ -730,7 +742,7 @@ Grafo<int> Grafo<Element>::getMapGrafo(){
     
     //crea los vertices mapeados del grafo
     while (act){
-        grafo.addVertice(i);
+        grafo.agregarVertice(i);
         mapa[act]=i;    //crea un mapa que relaciona vertice y su posicion asignada
         act=act->getProximoNodo();
         i++;

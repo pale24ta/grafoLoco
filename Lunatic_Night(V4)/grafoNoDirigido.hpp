@@ -228,7 +228,7 @@ inline GrafoNoDirigido<int> GrafoNoDirigido<Element>::getMapGrafo()
     
     //crea los vertices mapeados del grafo
     while (act){
-        grafo.addVertice(i);
+        grafo.agregarVertice(i);
         mapa[act]=i;    //crea un mapa que relaciona vertice y su posicion asignada
         act=act->getProximoNodo();
         i++;

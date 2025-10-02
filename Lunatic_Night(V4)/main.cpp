@@ -25,10 +25,10 @@ int main(){
         ng.agregarArco(v,w,i);
         
     }
-    g.addVertice('Z');
-    ng.addVertice('Z');
-    //g.vaciarGrafo();
-    //ng.vaciarGrafo();
+    g.agregarVertice('Z');
+    ng.agregarVertice('Z');
+    //g.vaciar();
+    //ng.vaciar();
 
     cout<<"Grado de  salida de a: "<<g.getGradoSalida('A')<<endl;
     cout<<"Grado de  entrada de a: "<<g.getGradoEntrada('A')<<endl;
