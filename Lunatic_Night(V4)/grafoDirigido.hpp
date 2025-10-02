@@ -22,10 +22,11 @@ class Grafo{
         NodoVertice<Element> *g;
         int nVertices,mArcos;
         bool verificarExistenciaElementoEnCola(queue<Element> cola, Element info); // Metodo privado para verificar la existerncia de ese elemento en la cola, implicando que hay que desenconlar para encontrarla
-        void DFS(Grafo<int> &g, int fuente, list<int> &recorrido, bool *visitados);
-        void BFS(Grafo<int> &g, vector<bool> &visitados, list<int> &recorrido, int nodoInicial);
+        //void DFS(Grafo<int> &g, int fuente, list<int> &recorrido, bool *visitados);
+        //void BFS(Grafo<int> &g, vector<bool> &visitados, list<int> &recorrido, int nodoInicial);
         void compConexDFS(map<NodoVertice<Element>*,bool> &visistados,list<Element> &compConexa,NodoVertice<Element>* inicial); //busca recursivamente elementos de una componente conexa
         void compConexDFS(map<NodoVertice<Element>*,bool> &visistados,NodoVertice<Element>* inicial);
+        void DFS(NodoVertice<Element> *inicio, list<Element> &recorrido, map<NodoVertice<Element>*, bool> &visitados);
     private:
         NodoVertice<Element> *getVerticeInicia(){return g;}
         
@@ -1031,21 +1032,7 @@ inline map<Element, int> Grafo<Element>::getMapVerticesInvertido()
 
     return diccionario;
 }
-template <typename Element>
-inline void Grafo<Element>::DFS(NodoVertice<Element> *inicio, list<Element> &recorrido, map<NodoVertice<Element>*, bool> &visitados)
-{
-    if(!visitados[inicio]){
-        recorrido.push_back(inicio->getInfo()); // Guardamos el la lista resultante
-        visitados[inicio] = true;  // marcamos como ya visitado
 
-        NodoArco<Element> *vecinos = inicio->getListaAdyacencia();  // Iteramos en la lista de adyacencia
-
-        while(vecinos){
-            DFS(vecinos->getInfo(),recorrido,visitados);   // recursion hacia el siguiente vecino
-            vecinos = vecinos->getProximoNodo();
-        }
-    }
-}
 template <typename Element>
 list<list<Element>> Grafo<Element>::getCompConexas(){
     list<NodoVertice<Element>*> vertices;   //lista de vertices(Nodos vertice)
