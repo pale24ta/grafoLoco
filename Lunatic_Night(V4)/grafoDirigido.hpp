@@ -14,7 +14,7 @@ using namespace std;
 /*
     GRAFO DIRIGIDO
 */
-
+//yisus mongolo
 
 template<typename Element>
 class Grafo{
