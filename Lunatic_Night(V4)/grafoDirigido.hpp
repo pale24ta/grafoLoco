@@ -27,6 +27,8 @@ class Grafo{
         void compConexDFS(map<NodoVertice<Element>*,bool> &visistados,list<Element> &compConexa,NodoVertice<Element>* inicial); //busca recursivamente elementos de una componente conexa
         void compConexDFS(map<NodoVertice<Element>*,bool> &visistados,NodoVertice<Element>* inicial);
         void DFS(NodoVertice<Element> *inicio, list<Element> &recorrido, map<NodoVertice<Element>*, bool> &visitados);
+        void copiarVertices(const Grafo<Element> &grafo,map<NodoVertice<Element>*,NodoVertice<Element>*> &espejo);
+        void copiarArcos(const Grafo<Element> &grafo,map<NodoVertice<Element>*,NodoVertice<Element>*> &espejo);
 
     private:
         NodoVertice<Element> *getVerticeInicia(){return g;}
@@ -83,9 +85,11 @@ class Grafo{
         list<list<Element>> getCompConexas();      //retorna una lista de listas de componentes conexas
         int getNumCompConexas();                   //retorna el numero de componentes conexas que posee el grafo
         static unordered_map<int, list<int> > mapearDiccionario(unordered_map<Element, list<Element> > diccionario, unordered_map<Element,int> &mapaComp);    // Metodo funcion que servira para mapear diccionarios y que tenga facil acceso a la hora de procesarlos
-
+    
         //Operadores
-        bool operator==(const Grafo<Element> &grafo);
+        bool operator==(const Grafo<Element> &grafo);                           //compara dos grafos y retorna verdadero en caso de ser iguales
+        bool operator!=(const Grafo<Element> &grafo){return !(*this == grafo);}//compara dos grafos y retorna verdadero en caso de ser digerentes
+        Grafo<Element>& operator=(const Grafo<Element> &grafo);                 //asigna (copia) un grafo a otro
 };
 
 
@@ -151,6 +155,8 @@ inline bool Grafo<Element>::verificarExistenciaElementoEnCola(queue<Element> col
     while(!cola.empty()){
         if(cola.front() = info)
             return true;
+
+        cola.pop();
     }
     return false;
 }
@@ -174,6 +180,7 @@ inline Grafo<Element>::~Grafo()
 template <typename Element>
 inline Grafo<Element>::Grafo(const Grafo<Element> &target) : g(NULL),nVertices(0),mArcos(0)
 {
+    if (!target.g) return;
     // Copiar todos los vértices
     NodoVertice<Element>* actual = target.g;
     NodoVertice<Element>* ultimo = NULL;
@@ -234,7 +241,7 @@ void Grafo<Element>::agregarVertice(Element v)
     // Anadiremos el vertice la principio de la lista de grafos
 
     NodoVertice<Element> *nuevoVertice = new NodoVertice<Element>(v);   // Creamos el nodo asignando memoria
-    NodoVertice<Element> *ant=NULL,*sig=g;
+    NodoVertice<Element> *ant=g,*sig=g;
     while (sig)
     {
         ant=sig;
@@ -960,7 +967,7 @@ int Grafo<Element>::getGradoEntrada(Element v){
     NodoVertice<Element>* act;
     NodoArco<Element>* arcoAct;
     int grado=0;
-    bool found;
+    bool found=false;
 
     act=g;
     //verifica que exista el vertice
@@ -1131,30 +1138,21 @@ bool Grafo<Element>::operator==(const Grafo<Element> &grafo){
     
     NodoVertice<Element>*i,*j;       //Variables que iteran sobre los vertices
     NodoArco<Element>*arcoActI,*arcoActJ;//Variables que iteran sobre los arcos
-    //queue<NodoVertice<Element>*> vertices,vertices2;
-    //bool igual=true;
-
     
     for (i = g; i ; i=i->getProximoNodo())       //Ciclo principal que itera sobre los vertices del grafo instanciado
     {
-        for ( j = grafo.g; j !=NULL && j->getInfo()!=i->getInfo(); j=j->getProximoNodo())    //ciclo que itera sobre el grafo comparado
-        {
-            /* code */
-        }
+        for ( j = grafo.g; j && j->getInfo()!=i->getInfo(); j=j->getProximoNodo()){}    //ciclo que itera sobre el grafo comparado
         
-        if (j==NULL)    //si no se encontro el vertice i en el grafo comparado, entonces ambos grafos son distintos
+        if (!j)    //si no se encontro el vertice i en el grafo comparado, entonces ambos grafos son distintos
         {
             return false;
         }
 
-        for ( arcoActI=i->getListaAdyacencia(); arcoActI!=NULL; arcoActI=arcoActI->getProximoNodo())  //Ciclo que itera sobre los arcos del grafo instanciado
+        for ( arcoActI=i->getListaAdyacencia(); arcoActI; arcoActI=arcoActI->getProximoNodo())  //Ciclo que itera sobre los arcos del grafo instanciado
         {
-            for (arcoActJ=j->getListaAdyacencia(); arcoActJ != NULL && arcoActJ->getInfo()->getInfo()!=arcoActI->getInfo()->getInfo(); arcoActJ= arcoActJ->getProximoNodo())   //Ciclo que itera sobre los arcos del grafo comparado
-            {
-                /* code */
-            }
+            for (arcoActJ=j->getListaAdyacencia(); arcoActJ && arcoActJ->getInfo()->getInfo()!=arcoActI->getInfo()->getInfo(); arcoActJ= arcoActJ->getProximoNodo()){}   //Ciclo que itera sobre los arcos del grafo comparado
             
-            if (arcoActJ==NULL)     //si no se encontro el arco i en el grafo comparado, entonces ambos grafos son distintos
+            if (!arcoActJ)     //si no se encontro el arco i en el grafo comparado, entonces ambos grafos son distintos
             {
                 return false;
             }
@@ -1164,6 +1162,79 @@ bool Grafo<Element>::operator==(const Grafo<Element> &grafo){
     }
     
     return true;
+}
+template <typename Element>
+Grafo<Element>& Grafo<Element>::operator=(const Grafo<Element> &grafo){
+    if(this==&grafo) //si son iguales retornas el mismo grafo
+        return *this;
+    
+    this->vaciar(); //vacias el grafo para asignarle el nuevo
+
+    if(!grafo.g) {  // Si el grafo fuente está vacío
+        nVertices = 0;
+        mArcos = 0;
+        return *this;
+    }
+    nVertices=grafo.nVertices;
+    mArcos=grafo.mArcos;
+    map<NodoVertice<Element>*,NodoVertice<Element>*> espejo;
+    copiarVertices(grafo,espejo);
+    copiarArcos(grafo,espejo);
+    
+    return *this;
+}
+
+template <typename Element>
+void Grafo<Element>::copiarVertices(const Grafo<Element> &grafo,map<NodoVertice<Element>*,NodoVertice<Element>*> &espejo){
+    NodoVertice<Element>*sig,*nuevo;
+    NodoVertice<Element>*anterior=NULL;
+    sig = grafo.g;
+
+    while (sig)
+    {
+        nuevo = new NodoVertice<Element>(sig->getInfo());
+        if(sig==grafo.g){
+            g=nuevo;
+        }else{
+            anterior->setProximoNodo(nuevo);
+        }
+        espejo[sig]=nuevo;
+        sig = sig->getProximoNodo();
+        anterior=nuevo;
+    }
+}
+
+template <typename Element>
+void Grafo<Element>::copiarArcos(const Grafo<Element> &grafo, map<NodoVertice<Element>*, NodoVertice<Element>*> &espejo){
+    NodoVertice<Element>* act = grafo.g;
+    NodoVertice<Element>* newAct = g;
+    
+    while (act)
+    {
+        NodoArco<Element>* arcoSig = act->getListaAdyacencia();
+        NodoArco<Element>* ultimoArco = NULL;
+        
+        while (arcoSig)
+        {
+            NodoArco<Element>* nuevo = new NodoArco<Element>();
+            nuevo->setCosto(arcoSig->getCosto());
+            nuevo->setInfo(espejo[arcoSig->getInfo()]);
+            
+            // Insertar en la lista de adyacencia del nuevo vértice
+            if (!newAct->getListaAdyacencia()) {
+                // Primer arco de la lista
+                newAct->setListaAdyacencia(nuevo);
+            } else {
+                // Insertar al final
+                ultimoArco->setProximoNodo(nuevo);
+            }
+            ultimoArco = nuevo;//actualiza para la siguiente iteracion
+            arcoSig = arcoSig->getProximoNodo();
+        }
+        
+        act = act->getProximoNodo();
+        newAct = newAct->getProximoNodo();
+    }
 }
 #endif
 

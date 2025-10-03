@@ -23,13 +23,14 @@ int main(){
         i++;
         g.agregarArco(v,w,i);
         ng.agregarArco(v,w,i);
-        g2.agregarArco(v,w,i);
+        //g2.agregarArco(v,w,i);
     }
-    g.agregarVertice('Z');
+    g.agregarVertice('W');
     //g2.agregarVertice('Z');
     ng.agregarVertice('Z');
     //g.vaciar();
     //ng.vaciar();
+    g2=g;
 
     cout<< (g==g2? "Son Iguales":"No Son Iguales")<<endl;
 
@@ -45,6 +46,15 @@ int main(){
         cout<< e << ", ";
     }
     cout<<endl;
+
+    cout<<"Vertices2: ";
+    vertices=g2.getVertices();
+    for (char e : vertices)
+    {
+        cout<< e << ", ";
+    }
+    cout<<endl;
+
 
     //mapeado
     Grafo<int> gMap=g.getMapGrafo();
