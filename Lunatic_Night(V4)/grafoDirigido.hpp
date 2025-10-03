@@ -92,8 +92,13 @@ class Grafo{
         list<list<Element>> getPuentes();           // Busca todos los arcos que actuan como puerte del grafo, son aquellos que, si se eliminan, el grafo pasa a ser disconexo
         bool esBipartito();                         // Indica si el grafo puede ser bipartito
         int getGradoVertice(Element v);             // Obtiene el grafo de una vertice v
+<<<<<<< HEAD
         // Inclusion de Jesus Munoz
         list<Element> getCaminoMasCorto(Element inicio, Element fin);   // Busca el camino mas corto entre dos vertices (grafos Sin ponderacion)
+=======
+        float getPeso();                              //Obtiene la sumatoria de los pesos del Grafo
+        list<Element> getCamino(Element v,Element w);
+>>>>>>> 4af8b98 (se añadio getPeso)
         //Operadores
         bool operator==(const Grafo<Element> &grafo);                        //compara dos grafos y retorna verdadero en caso de ser iguales
         bool operator!=(const Grafo<Element> &grafo){return !(*this == grafo);}//compara dos grafos y retorna verdadero en caso de ser digerentes
@@ -220,7 +225,7 @@ inline Grafo<Element>::Grafo(const Grafo<Element> &target) : g(NULL),nVertices(0
         
         while (arcoActual) {
             NodoArco<Element>* nuevoArco = new NodoArco<Element>();
-            nuevoArco->setCosto(arcoActual->getCosto());
+            nuevoArco->setPeso(arcoActual->getPeso());
             nuevoArco->setInfo(mapaVertices[arcoActual->getInfo()]);
             if (!nuevoVertice->getListaAdyacencia()) {
                 nuevoVertice->setListaAdyacencia(nuevoArco);
@@ -383,7 +388,7 @@ inline void Grafo<Element>::getReverse()
                 
                 // Creamos el nuevo arco
                 nuevoArco = new NodoArco<Element>(iteradorVertices,0,iteradorArcos->getInfo()->getListaAdyacencia());
-                nuevoArco->setCosto(iteradorArcos->getCosto());
+                nuevoArco->setPeso(iteradorArcos->getPeso());
                 // A su ves, debemos incorporarlo en el conjunto
                 arcosUnicos.insert(make_pair(iteradorArcos->getInfo(),iteradorVertices));   // Tiene que ser el arco w->v
                 iteradorArcos->getInfo()->setListaAdyacencia(nuevoArco);    // Se agrega un nuevoArco al vertice w
@@ -600,7 +605,7 @@ float Grafo<Element>::getPesoArco(Element v, Element w)  // Encontrar el peso de
 
         if(iterAd)  // Preguntar si fue encontrado
         {
-            weight = iterAd->getCosto();    // Obtenemos el peso/Costo del arco
+            weight = iterAd->getPeso();    // Obtenemos el peso/Costo del arco
         }
 
         // En caso contrario, no existe el arco dirgido de V -> W
@@ -1295,7 +1300,7 @@ void Grafo<Element>::copiarArcos(const Grafo<Element> &grafo, map<NodoVertice<El
         while (arcoSig)
         {
             NodoArco<Element>* nuevo = new NodoArco<Element>();
-            nuevo->setCosto(arcoSig->getCosto());
+            nuevo->setPeso(arcoSig->getPeso());
             nuevo->setInfo(espejo[arcoSig->getInfo()]);
             
             // Insertar en la lista de adyacencia del nuevo vértice
@@ -1403,6 +1408,26 @@ void Grafo<Element>::DFS(NodoVertice<Element>* inicial,map<NodoVertice<Element>*
         
     }
     
+}
+template <typename Element>
+float Grafo<Element>::getPeso(){
+    NodoVertice<Element>*act;       //iterador de vertices
+    NodoArco<Element>*arcoAct;      //iterador de arcos
+    float peso=0;
+
+    act=g;
+    while (act)
+    {
+        arcoAct=act->getListaAdyacencia();
+        while (arcoAct)
+        {
+            peso = peso + arcoAct->getPeso();         //suma los pesos de los arcos del vertice actual
+            arcoAct=arcoAct->getProximoNodo();
+        }
+        act = act->getProximoNodo();
+    }
+    
+    return peso;
 }
 #endif
 

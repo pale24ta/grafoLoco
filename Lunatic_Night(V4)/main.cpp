@@ -18,6 +18,7 @@ int main(){
     Grafo<char> g,g2;
     char v,w;
     int i=0;
+    float coste=9;
     while (cin>> v >> w)
     {
         i++;
@@ -25,11 +26,13 @@ int main(){
         ng.agregarArco(v,w,i);
         //g2.agregarArco(v,w,i);
     }
-    g.agregarVertice('W');
+    //g.agregarVertice('W');
     //g2.agregarVertice('Z');
     ng.agregarVertice('Z');
     //g.vaciar();
     //ng.vaciar();
+    coste=g.getPeso();
+    cout<<"Peso: "<<coste<<endl;
     g2=g;
     cout<<"Fuente: "<<g.getFuente()<<endl;
     cout<< (g==g2? "Son Iguales":"No Son Iguales")<<endl;

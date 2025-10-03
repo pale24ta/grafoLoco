@@ -65,9 +65,9 @@ class NodoArco{
         // getters y setters
         NodoVertice<Element> *getInfo(){return info;}
         NodoArco<Element> *getProximoNodo(){return prox;}
-        float getCosto(){return weight;}
+        float getPeso(){return weight;}
         void setInfo(NodoVertice<Element> *vN){info = vN;}
-        void setCosto(float c){weight = c;}
+        void setPeso(float c){weight = c;}
         void setProximoNodo(NodoArco<Element> *pN){prox = pN;}
 };
 
