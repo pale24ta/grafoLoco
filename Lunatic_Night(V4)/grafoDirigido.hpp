@@ -89,10 +89,12 @@ class Grafo{
         static unordered_map<int, list<int> > mapearDiccionario(unordered_map<Element, list<Element> > diccionario, unordered_map<Element,int> &mapaComp);    // Metodo funcion que servira para mapear diccionarios y que tenga facil acceso a la hora de procesarlos
         bool esConexo();
         list<list<Element>> getPuentes();           // Busca todos los arcos que actuan como puerte del grafo, son aquellos que, si se eliminan, el grafo pasa a ser disconexo
+        bool esBipartito();                         // Indica si el grafo puede ser bipartito
         int getGradoVertice(Element v);             // Obtiene el grafo de una vertice v
     protected:
         // Este dfs esta modificado para realizar el recorrido de los puentes, utilizando el algoritmo de tarjan
         void dfsPuentes(NodoVertice<Element> *inicio, map<NodoVertice<Element>*,bool> &visitados, map<NodoVertice<Element>*,int> &desc, map<NodoVertice<Element>*,int> &low, map<NodoVertice<Element>*,NodoVertice<Element>*> &parents, list<list<Element>> &arcosRes, int &time);
+        void esBipartito(NodoVertice<Element> *inicio, map<NodoVertice<Element>*,bool> &visitados, map<NodoVertice<Element>*,int> &colores, bool &respuesta);    // Indica si el grafo puede ser bipartito
         
         //Operadores
     public:
