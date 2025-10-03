@@ -7,8 +7,8 @@
 #include <map>
 #include <set>
 #include <algorithm>
-#include<list>
-#include<queue>
+#include <list>
+#include <queue>
 using namespace std;
 
 /*
@@ -22,16 +22,15 @@ class Grafo{
         NodoVertice<Element> *g;
         int nVertices,mArcos;
         bool verificarExistenciaElementoEnCola(queue<Element> cola, Element info); // Metodo privado para verificar la existerncia de ese elemento en la cola, implicando que hay que desenconlar para encontrarla
-        //void DFS(Grafo<int> &g, int fuente, list<int> &recorrido, bool *visitados);
-        //void BFS(Grafo<int> &g, vector<bool> &visitados, list<int> &recorrido, int nodoInicial);
-        void compConexDFS(map<NodoVertice<Element>*,bool> &visistados,list<Element> &compConexa,NodoVertice<Element>* inicial); //busca recursivamente elementos de una componente conexa
-        void compConexDFS(map<NodoVertice<Element>*,bool> &visistados,NodoVertice<Element>* inicial);
-        void DFS(NodoVertice<Element> *inicio, list<Element> &recorrido, map<NodoVertice<Element>*, bool> &visitados);
+        
         void copiarVertices(const Grafo<Element> &grafo,map<NodoVertice<Element>*,NodoVertice<Element>*> &espejo);
         void copiarArcos(const Grafo<Element> &grafo,map<NodoVertice<Element>*,NodoVertice<Element>*> &espejo);
-
-        list<Element> BFS(NodoVertice<Element>* inicial,map<NodoVertice<Element>*,bool> &visitados,list<Element> &result);
-        list<Element> DFS(NodoVertice<Element>* inicial,map<NodoVertice<Element>*,bool> &visitados,list<Element> &result);
+        //Recorridos auxiliares
+        void BFS(NodoVertice<Element>* inicial,map<NodoVertice<Element>*,bool> &visitados,list<Element> &result);
+        void DFS(NodoVertice<Element>* inicial,map<NodoVertice<Element>*,bool> &visitados,list<Element> &result);
+        void compConexDFS(map<NodoVertice<Element>*,bool> &visistados,list<Element> &compConexa,NodoVertice<Element>* inicial); //busca recursivamente elementos de una componente conexa
+        void compConexDFS(map<NodoVertice<Element>*,bool> &visistados,NodoVertice<Element>* inicial);
+        void llenarMapa(map<NodoVertice<Element>*,bool> &visitados,NodoVertice<Element>* &inicial,Element v);       //llena un mapa de no visitados y guarda la posicion del vertice inicial
 
     private:
         NodoVertice<Element> *getVerticeInicia(){return g;}
@@ -58,8 +57,8 @@ class Grafo{
         //Recorridos
         list<Element> BFS();    // Versiones optimas de los recorridos, recorrido por ondas
         list<Element> DFS();    // Recorrido por profundidad
-        list<Element> BFS(Element v);
-        list<Element> DFS(Element v);
+        list<Element> BFS(Element v);   //recorrido por ondas
+        list<Element> DFS(Element v);   //recorrido en profundidad
 
         //Basicos
         // Nodo: estos dos metodos que tienen virtual estan pensados para reinventarse en la clase hija de grafo, Grafo no dirigido
@@ -83,14 +82,12 @@ class Grafo{
         map<int,Element> getMapVertices(); //O(n)  retorna un mapa con un mapeo de los vertices
         map<Element,int> getMapVerticesInvertido(); // Retorna el mapar pero clave =Element : contenido = numero
         Grafo<int> getMapGrafo(); //retorna un el mismo grafo con valores mapeados
-        // list<int> BFS(Grafo<int> &g);
-        // list<int> DFS(Grafo<int> &g);
         int getGradoSalida(Element v);              //retorna el grado de salida (numero de arcos que apuntan a otros Vertices)
         int getGradoEntrada(Element v);             //Retorna el grado de entrada (numnero de arcos que apuntan al Vertice)
         list<list<Element>> getCompConexas();      //retorna una lista de listas de componentes conexas
         int getNumCompConexas();                   //retorna el numero de componentes conexas que posee el grafo
         static unordered_map<int, list<int> > mapearDiccionario(unordered_map<Element, list<Element> > diccionario, unordered_map<Element,int> &mapaComp);    // Metodo funcion que servira para mapear diccionarios y que tenga facil acceso a la hora de procesarlos
-    
+        bool esConexo();
         //Operadores
         bool operator==(const Grafo<Element> &grafo);                           //compara dos grafos y retorna verdadero en caso de ser iguales
         bool operator!=(const Grafo<Element> &grafo){return !(*this == grafo);}//compara dos grafos y retorna verdadero en caso de ser digerentes
@@ -863,82 +860,11 @@ inline list<Element> Grafo<Element>::DFS()
     }
 
     // Cargamos el metodo recursivo
-    DFS(g,resultado,visitados);
+    DFS(g,visitados,resultado);
 
     return resultado;
 }
 
-/*
-template<typename Element>
-list<int> Grafo<Element>::BFS(Grafo<int> &g){
-    list<int> recorrido;
-    vector<bool> visitados(g.getNVertices(), false);
-
-    for(int i = 0; i < g.getNVertices(); i++){
-        if(!visitados[i])
-            BFS(g, visitados, recorrido, i);
-    }
-    return recorrido;
-}
-
-template<typename Element>
-void Grafo<Element>::BFS(Grafo<int> &g, vector<bool> &visitados, list<int> &recorrido, int nodoInicial){
-    queue<int> c;
-    list<int> sucesores;
-    int v, m;
-
-    visitados[nodoInicial] = true;
-    c.push(nodoInicial);
-
-    while(!c.empty()){
-        v = c.front();
-        c.pop();
-
-        recorrido.push_back(v);
-        sucesores = g.getSucesores(v);
-
-        while(!sucesores.empty()){
-            m = sucesores.front();
-            if(!visitados[m]){
-                visitados[m] = true;
-                c.push(m);
-            }
-            sucesores.pop_front();
-        }
-    }
-}
-template<typename Element>
-list<int> Grafo<Element>::DFS(Grafo<int> &g){
-    list<int> recorrido;
-    bool visitados[g.getNVertices()];
-
-    for(int i = 0; i < g.getNVertices(); i++)
-        visitados[i] = false;   // Llenamos el vector de falsos
-
-    DFS(g,g.getFuente(),recorrido,visitados); // Opera la funcion recursiva
-
-    return recorrido;
-}
-template<typename Element>
-void Grafo<Element>::DFS(Grafo<int> &g, int fuente, list<int> &recorrido, bool *visitados){
-    list<int> sucesores;
-    if(!visitados[fuente-1]){
-        int i;
-
-        // Estamos en el recorrido del nodo actual, asi que
-        visitados[fuente-1] = true; // se tacha como nodo recorrido
-        recorrido.push_back(fuente);    // inserta la fuente en la lista de recorridos
-
-        // tomamos los sucesores de la fuente
-        sucesores = g.getSucesores(fuente);
-
-        while(!sucesores.empty()){
-            DFS(g,sucesores.front(),recorrido,visitados);   // Recursion al primer elemento de los sucesores del siguiente sucesor
-            sucesores.pop_front();  // Eliminamos ese sucesor
-        }
-    }
-}
-*/
 template <typename Element>
 int Grafo<Element>::getGradoSalida(Element v){
     NodoVertice<Element>* act;
@@ -1010,22 +936,6 @@ int Grafo<Element>::getGradoEntrada(Element v){
     }
     
     return grado;
-}
-
-template <typename Element>
-inline void Grafo<Element>::DFS(NodoVertice<Element> *inicio, list<Element> &recorrido, map<NodoVertice<Element>*, bool> &visitados)
-{
-    if(!visitados[inicio]){
-        recorrido.push_back(inicio->getInfo()); // Guardamos el la lista resultante
-        visitados[inicio] = true;  // marcamos como ya visitado
-
-        NodoArco<Element> *vecinos = inicio->getListaAdyacencia();  // Iteramos en la lista de adyacencia
-
-        while(vecinos){
-            DFS(vecinos->getInfo(),recorrido,visitados);   // recursion hacia el siguiente vecino
-            vecinos = vecinos->getProximoNodo();
-        }
-    }
 }
 
 template <typename Element>
@@ -1240,6 +1150,96 @@ void Grafo<Element>::copiarArcos(const Grafo<Element> &grafo, map<NodoVertice<El
         act = act->getProximoNodo();
         newAct = newAct->getProximoNodo();
     }
+}
+
+template <typename Element>
+void Grafo<Element>::llenarMapa(map<NodoVertice<Element>*,bool> &visitados,NodoVertice<Element>* &inicial,Element v){
+    NodoVertice<Element>*act;
+
+    act=g;
+    while (act)
+    {
+        visitados[act]=false;   //llena el mapa como no visitado
+        if(act->getInfo()==v)
+            inicial=act;        //guardar el nodo del vertice inicial
+        act=act->getProximoNodo();
+    }
+    
+}
+
+template <typename Element>
+list<Element> Grafo<Element>::BFS(Element v){
+    NodoVertice<Element>*inicial=NULL;
+    map<NodoVertice<Element>*,bool> visitados;
+    list<Element> result;
+
+    llenarMapa(visitados,inicial,v);
+    if(inicial)
+        BFS(inicial,visitados,result);  
+    return result;
+}
+template <typename Element>
+void Grafo<Element>::BFS(NodoVertice<Element>* inicial,map<NodoVertice<Element>*,bool> &visitados,list<Element> &result){
+    NodoArco<Element> *arcoAct;
+    queue<NodoVertice<Element>*> cola;
+
+    cola.push(inicial);
+    while (!cola.empty())   //recorre los sucesores de inicial
+    {
+        inicial=cola.front();
+        cola.pop();
+        
+        if (!visitados[inicial])
+        {
+            visitados[inicial]=true;                    //marca el vertice como visitado
+            result.push_back(inicial->getInfo());       //guarda el vertice no visitado
+            arcoAct=inicial->getListaAdyacencia();
+
+            while (arcoAct)                             //guarda en la cola los vertices no visitados
+            {
+                if (!visitados[arcoAct->getInfo()])
+                {
+                    cola.push(arcoAct->getInfo());
+                }
+                arcoAct=arcoAct->getProximoNodo();
+            }
+            
+        }
+        
+    }
+    
+}
+
+template <typename Element>
+list<Element> Grafo<Element>::DFS(Element v){
+    NodoVertice<Element>*inicial=NULL;
+    map<NodoVertice<Element>*,bool> visitados;
+    list<Element> result;
+
+    llenarMapa(visitados,inicial,v);
+    if(inicial)
+        DFS(inicial,visitados,result);  
+    return result;
+}
+template <typename Element>
+void Grafo<Element>::DFS(NodoVertice<Element>* inicial,map<NodoVertice<Element>*,bool> &visitados,list<Element> &result){
+    NodoArco<Element> *arcoAct;
+
+    if (!visitados[inicial])
+    {
+        arcoAct=inicial->getListaAdyacencia();
+
+        visitados[inicial]=true;             //marca el vertice como visitado
+        result.push_back(inicial->getInfo());//guarda el vertice no visitado
+
+        while (arcoAct)
+        {
+            DFS(arcoAct->getInfo(),visitados,result);//busca recursivamente los sucesores
+            arcoAct=arcoAct->getProximoNodo();
+        }
+        
+    }
+    
 }
 #endif
 

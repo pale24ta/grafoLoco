@@ -55,6 +55,22 @@ int main(){
     }
     cout<<endl;
 
+    cout<<"BFS: ";
+    vertices=g.BFS('A');
+    for (char e : vertices)
+    {
+        cout<< e << ", ";
+    }
+    cout<<endl;
+
+    cout<<"DFS: ";
+    vertices=g.DFS('A');
+    for (char e : vertices)
+    {
+        cout<< e << ", ";
+    }
+    cout<<endl;
+
 
     //mapeado
     Grafo<int> gMap=g.getMapGrafo();
