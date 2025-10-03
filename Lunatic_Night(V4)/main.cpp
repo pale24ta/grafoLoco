@@ -191,5 +191,8 @@ int main(){
     }
     cout<<"]";
 
+    // Mostrar si es bipartito
+    if(ng.esBipartito()) cout<<"EsBipartirto";
+    else cout<< "no es Bipartito";
     return 0;
 }

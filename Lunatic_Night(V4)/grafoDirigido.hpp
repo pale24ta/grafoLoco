@@ -1086,6 +1086,31 @@ inline list<list<Element>> Grafo<Element>::getPuentes()
 }
 
 template <typename Element>
+inline bool Grafo<Element>::esBipartito()
+{
+    // Creamos los mapas
+    map<NodoVertice<Element>*,bool> visitados;
+    map<NodoVertice<Element>*,int> colores;
+    // la respuesta para el grafo
+    bool respuesta = true;
+
+
+    // incializamos los mapas
+    for(NodoVertice<Element> *iter = g; iter ; iter = iter->getProximoNodo()){
+        visitados[iter] = false;
+        colores[iter] = -1;
+    }
+
+    // ahora operamos con bfs
+    for(NodoVertice<Element> *iter = g; iter  && respuesta; iter = iter->getProximoNodo()){
+        if(!visitados[iter] && respuesta){
+            esBipartito(iter,visitados,colores,respuesta);
+        }
+    }
+    return respuesta;
+}
+
+template <typename Element>
 inline int Grafo<Element>::getGradoVertice(Element v)
 {
     //O(n + m)
@@ -1157,6 +1182,46 @@ inline void Grafo<Element>::dfsPuentes(NodoVertice<Element> *inicio, map<NodoVer
         }
         vecino = vecino->getProximoNodo();
     }
+}
+template <typename Element>
+inline void Grafo<Element>::esBipartito(NodoVertice<Element> *inicio, map<NodoVertice<Element> *, bool> &visitados, map<NodoVertice<Element> *, int> &colores, bool &respuesta)
+{
+    queue<NodoVertice<Element>*> recorrido;
+
+    // iniciamos con el inicial
+    recorrido.push(inicio);
+    visitados[inicio] = true;
+
+    while(!recorrido.empty() && respuesta){
+        NodoVertice<Element> *v = recorrido.front();
+        recorrido.pop();
+
+        // Visitamos a los vecinos
+        NodoArco<Element> *vecino = v->getListaAdyacencia();
+
+        while(vecino && respuesta){
+            NodoVertice<Element> *w = vecino->getInfo();
+            
+            // preguntamos si el vecino w no ha sido pintado
+            if(colores[w] == -1){
+                // lo pintamos del color opuesto
+                colores[w] = (colores[v] == 0)? 1: 0;
+            }else{
+                // en caso contrario, verificamos si es del mismo color
+                respuesta = !(colores[v] == colores[w]); // no es bipartito el grafo
+            }
+
+            // Verificamos si la fue visitado
+            while(!visitados[w]){
+                recorrido.push(w);
+                visitados[w] = true;
+            }
+
+            // Vamos con otro vecino
+            vecino = vecino->getProximoNodo();
+        }
+    }
+
 }
 template <typename Element>
 bool Grafo<Element>::operator==(const Grafo<Element> &grafo)
