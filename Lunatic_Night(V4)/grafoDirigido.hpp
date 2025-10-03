@@ -92,7 +92,8 @@ class Grafo{
         list<list<Element>> getPuentes();           // Busca todos los arcos que actuan como puerte del grafo, son aquellos que, si se eliminan, el grafo pasa a ser disconexo
         bool esBipartito();                         // Indica si el grafo puede ser bipartito
         int getGradoVertice(Element v);             // Obtiene el grafo de una vertice v
-        
+        // Inclusion de Jesus Munoz
+        list<Element> getCaminoMasCorto(Element inicio, Element fin);   // Busca el camino mas corto entre dos vertices (grafos Sin ponderacion)
         //Operadores
         bool operator==(const Grafo<Element> &grafo);                        //compara dos grafos y retorna verdadero en caso de ser iguales
         bool operator!=(const Grafo<Element> &grafo){return !(*this == grafo);}//compara dos grafos y retorna verdadero en caso de ser digerentes
@@ -1066,6 +1067,56 @@ inline int Grafo<Element>::getGradoVertice(Element v)
     }
     return count;
 }
+
+template <typename Element>
+inline list<Element> Grafo<Element>::getCaminoMasCorto(Element inicio, Element fin)
+{
+        int i;
+    list<Element> vertices, sucesores, caminoActual;
+    map<Element,bool> visitados;  // Mapa de visitados
+    queue<list<Element>> cola;   //cola de listas para guardar los caminos
+
+    vertices = this->getVertices(); //obtener la lista de vertices del grafo
+
+    for (i = 0; i < nVertices; i++)
+    {
+        visitados[vertices.front()]=false;   //inicializa el mapa de visitados
+        vertices.pop_front();
+    }
+    
+
+    caminoActual.push_back(inicio);        //inserta el vertice inicial en el camino actual
+    cola.push(caminoActual);                //encola el camino actual
+
+    while(!cola.empty()){
+
+        caminoActual = cola.front();          //toma el primer camino de la cola
+        cola.pop();
+
+        visitados[caminoActual.back()]=true;   //marca el vertice como visitado
+
+        if(caminoActual.back() == fin){   //si el ultimo elemento del camino es el vertice final, se retorna el camino
+            return caminoActual;
+        }
+
+        sucesores = this->getSucesores(caminoActual.back()); //obtiene los sucesores del ultimo vertice del camino actual
+        while (!sucesores.empty()){
+
+            if(!visitados[sucesores.front()]){   //si el vertice no ha sido visitado, se crea un nuevo camino y se encola
+                caminoActual.push_back(sucesores.front());  //inserta el siguiente vertice al camino actual
+                cola.push(caminoActual);                        //encola el camino actual
+                caminoActual.pop_back();                        //Elimina el vertice recien insertado para insertar un hermano en el camino
+            }
+
+            sucesores.pop_front();
+        }
+        caminoActual.clear(); //limpia el camino actual para la siguiente iteracion
+
+    }
+
+    // Tiene que devolver la lista a cualquier costo
+    return caminoActual;
+}   
 
 template <typename Element>
 void Grafo<Element>::compConexDFS(map<NodoVertice<Element>*,bool> &visistados,NodoVertice<Element>* inicial){
