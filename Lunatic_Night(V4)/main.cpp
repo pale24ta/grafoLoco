@@ -152,5 +152,17 @@ int main(){
     }
     cout<<endl;
 
+    // Probando el getPuentes
+
+    cout<<"[";
+    for(const auto &n : g.getPuentes()){
+        cout<<"[";
+        for(const auto &m : n){
+            cout<< m << ",";
+        }
+        cout<<"]";
+    }
+    cout<<"]";
+
     return 0;
 }

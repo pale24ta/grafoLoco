@@ -83,8 +83,13 @@ class Grafo{
         list<list<Element>> getCompConexas();      //retorna una lista de listas de componentes conexas
         int getNumCompConexas();                   //retorna el numero de componentes conexas que posee el grafo
         static unordered_map<int, list<int> > mapearDiccionario(unordered_map<Element, list<Element> > diccionario, unordered_map<Element,int> &mapaComp);    // Metodo funcion que servira para mapear diccionarios y que tenga facil acceso a la hora de procesarlos
-
+        list<list<Element>> getPuentes();           // Busca todos los arcos que actuan como puerte del grafo, son aquellos que, si se eliminan, el grafo pasa a ser disconexo
+        int getGradoVertice(Element v);             // Obtiene el grafo de una vertice v
+    protected:
+        // Este dfs esta modificado para realizar el recorrido de los puentes, utilizando el algoritmo de tarjan
+        void dfsPuentes(NodoVertice<Element> *inicio, map<NodoVertice<Element>*,bool> &visitados, map<NodoVertice<Element>*,int> &desc, map<NodoVertice<Element>*,int> &low, map<NodoVertice<Element>*,NodoVertice<Element>*> &parents, list<list<Element>> &arcosRes, int &time);
         //Operadores
+    public:
         bool operator==(const Grafo<Element> &grafo);
 };
 
@@ -1109,6 +1114,67 @@ int Grafo<Element>::getNumCompConexas(){
 }
 
 template <typename Element>
+inline list<list<Element>> Grafo<Element>::getPuentes()
+{
+    /*
+        Para este algoritmos utilizaremos el algoritmo de tarjan, con la finalidad de obtener
+        un orden de complejidad O(n + m)
+    */
+
+    list<list<Element> > arcosResultados;   // Lista de arcos resultante
+
+    // En caso de ser un grafo vacio
+    if(!g) return arcosResultados;
+
+    map<NodoVertice<Element>*,bool> visitados;  // Mapa de visitados
+    map<NodoVertice<Element>*,int>  desc, low;  // Estos mapas seran fundamentales, el primero des tiempo de descubrimiento y el otro el minimo alcance
+    map<NodoVertice<Element>*,NodoVertice<Element>*> parents;   // Mapa de las vertices que son padre de otras vertices
+
+    // inicializamos los mapas
+
+    for(NodoVertice<Element> *iterador = g; iterador; iterador = iterador->getProximoNodo()){
+        visitados[iterador] = false;
+        desc[iterador] = -1;
+        low[iterador] = -1;
+        parents[iterador] = NULL;
+    }
+    // tiempo
+    int tiempo = 0;
+
+    // iteramos y utilizamos el dfs para este problema
+
+    for(NodoVertice<Element> *iterador = g; iterador; iterador = iterador->getProximoNodo())
+    {
+        if(!visitados[iterador])
+            dfsPuentes(iterador,visitados,desc,low,parents,arcosResultados,tiempo);
+    }
+    return arcosResultados;
+}
+
+template <typename Element>
+inline int Grafo<Element>::getGradoVertice(Element v)
+{
+    //O(n + m)
+
+    NodoVertice<Element> *iteradorVer = g;
+    int count = -1; // SI el vertice no ha sido encontrada, devolvera -1
+
+    while(iteradorVer && iteradorVer->getInfo() != v){
+        iteradorVer = iteradorVer->getProximoNodo();
+    }
+
+    // En caso de encontrarla
+    if(iteradorVer){
+        count = 0;
+
+        for(NodoArco<Element> *iteradorArco = iteradorVer->getListaAdyacencia() ; iteradorArco; iteradorArco = iteradorArco->getProximoNodo()){
+            count += 1;
+        }
+    }
+    return count;
+}
+
+template <typename Element>
 void Grafo<Element>::compConexDFS(map<NodoVertice<Element>*,bool> &visistados,NodoVertice<Element>* inicial){
     NodoArco<Element>* arcoAct;
     if (!visistados[inicial])
@@ -1124,8 +1190,43 @@ void Grafo<Element>::compConexDFS(map<NodoVertice<Element>*,bool> &visistados,No
     }
     
 }
+
 template <typename Element>
-bool Grafo<Element>::operator==(const Grafo<Element> &grafo){
+inline void Grafo<Element>::dfsPuentes(NodoVertice<Element> *inicio, map<NodoVertice<Element> *, bool> &visitados, map<NodoVertice<Element> *, int> &desc, map<NodoVertice<Element> *, int> &low, map<NodoVertice<Element> *, NodoVertice<Element> *> &parents, list<list<Element> > &arcosRes, int &time)
+{
+    visitados[inicio] = true;
+    desc[inicio] = time;
+    low[inicio] = time;
+    time += 1;
+
+    // recorremo sus vecinos
+    NodoArco<Element>* vecino = inicio->getListaAdyacencia();
+
+    while(vecino){
+        if(!visitados[vecino->getInfo()]){
+            parents[vecino->getInfo()] = inicio;    // Le indicamos quien es su padre
+            dfsPuentes(vecino->getInfo(),visitados,desc,low,parents,arcosRes,time);
+
+
+            // Actualizar el valor del low del padre, o vertice actual
+            low[inicio] = min(low[inicio],low[vecino->getInfo()]);
+
+            // si low[vecino] >  dis[inicio] entonces inicio-vecino es puente
+            if(low[vecino->getInfo()] >  desc[inicio]){
+                // Creamos una sublista, guardamos u-v en la lista resultante
+                arcosRes.push_back(list<Element>({inicio->getInfo(),vecino->getInfo()->getInfo()}));
+            }
+
+
+        }else if(vecino->getInfo() != parents[inicio]){
+            low[inicio] = min(low[inicio],desc[vecino->getInfo()]);
+        }
+        vecino = vecino->getProximoNodo();
+    }
+}
+template <typename Element>
+bool Grafo<Element>::operator==(const Grafo<Element> &grafo)
+{
     if (nVertices != grafo.nVertices || mArcos!=grafo.mArcos)   //Si el numero de vertices o de arcos no concuerdan, entonces son grafos distintos
         return false;
     
