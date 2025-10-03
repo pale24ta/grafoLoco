@@ -31,7 +31,7 @@ int main(){
     //g.vaciar();
     //ng.vaciar();
     g2=g;
-
+    cout<<"Fuente: "<<g.getFuente()<<endl;
     cout<< (g==g2? "Son Iguales":"No Son Iguales")<<endl;
 
     cout<<"Grado de  salida de a: "<<g.getGradoSalida('A')<<endl;
@@ -71,7 +71,7 @@ int main(){
     }
     cout<<endl;
 
-
+    
     //mapeado
     Grafo<int> gMap=g.getMapGrafo();
     list<int> mapa=gMap.getVertices();
@@ -85,6 +85,23 @@ int main(){
     list<list<char>> arcos=g.getArcos(),conexas=g.getCompConexas();
     float peso;
     char from,to;
+    for (list<char> par: arcos)
+    {
+        from=par.front();
+        to=par.back();
+        cout<<"(";
+        for (char e : par)
+        {
+            cout<<e<<" ";
+            
+        }
+        peso=g.getPesoArco(from,to);
+        cout<<")= "<<peso<<endl;
+    }
+    cout<<endl;
+
+    g.getReverse();
+    arcos=g.getArcos();
     for (list<char> par: arcos)
     {
         from=par.front();
