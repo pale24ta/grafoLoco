@@ -136,6 +136,7 @@ int main(){
     }
 
     //TEST Grafo no dirigido
+    cout<<" Su vertices =";
     vertices=ng.getVertices();
     for (char e : vertices)
     {
@@ -181,9 +182,9 @@ int main(){
     // Probando el getPuentes
 
     cout<<"[";
-    for(const auto &n : g.getPuentes()){
+    for(list<char> n : g.getPuentes()){
         cout<<"[";
-        for(const auto &m : n){
+        for(char m : n){
             cout<< m << ",";
         }
         cout<<"]";

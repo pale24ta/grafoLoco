@@ -251,24 +251,20 @@ void Grafo<Element>::agregarVertice(Element v)
     // Anadiremos el vertice la principio de la lista de grafos
 
     NodoVertice<Element> *nuevoVertice = new NodoVertice<Element>(v);   // Creamos el nodo asignando memoria
-    NodoVertice<Element> *ant=g,*sig=g;
-    while (sig)
-    {
-        ant=sig;
-        sig=sig->getProximoNodo();
-    }
-    
+    NodoVertice<Element> *ant=g;
 
-    if(!g)   // si el puntero al vertice inicial (puntero g) es vacio entoces se incerta al principio
-    {
-        g=nuevoVertice;
-    }else
-    {
-        //sino, se inserta en la ultima posicion
-        ant->setProximoNodo(nuevoVertice);
-        nuevoVertice->setProximoNodo(NULL);
+    while(ant && ant->getProximoNodo()){
+        ant = ant->getProximoNodo();
     }
-    
+
+    if(ant){
+        // en caso de estar en la ultima vertice de la lista
+        ant->setProximoNodo(nuevoVertice);
+    }else{
+        // caso contrario, osea que seria un grafo vacio inicialmente
+        nuevoVertice->setProximoNodo(g);
+        g = nuevoVertice;
+    }
 
     nVertices += 1; // Sumamos la cantidad
 }
@@ -294,12 +290,26 @@ void Grafo<Element>::agregarArco(Element v, Element w, float c)
     // En caso de no haber encontrado la vertice, tendra que crearlo e insertarlo como nuevo
     if(!iterVertices){
         iterVertices = new NodoVertice<Element>(v);
-        iterVertices->setProximoNodo(g);    // Lo colocamos al principio del grafo
-        g = iterVertices;
+
+        // Debemos colocar esta vertice, al final de la lista de vertices
+        NodoVertice<Element> *iteradorAux = g;
+        while(iteradorAux && iteradorAux->getProximoNodo()){
+            iteradorAux = iteradorAux->getProximoNodo();
+        }
+
+        // Pregunta si el iteradorAux no es Null
+        if(iteradorAux){
+            // insertar el nuevoVertice despues del iteradorAux
+            iteradorAux->setProximoNodo(iterVertices);
+        }else{
+            // Quiere decir que es al inicio
+            iterVertices->setProximoNodo(g);
+            g = iterVertices;
+        }
+
         nVertices += 1;
     }
     
-    nuevoArco = new NodoArco<Element>();   // Creamos el nuevo nodo de adyacencia
 
     if(!memorizarVertice)    // si el iterador no se topo con w antes que v
     {
@@ -312,25 +322,22 @@ void Grafo<Element>::agregarArco(Element v, Element w, float c)
         if(!memorizarVertice){
             // Tendra que ser creado tambien
             memorizarVertice = new NodoVertice<Element>(w);
-            NodoVertice<Element> *act=g;
-            while (act->getProximoNodo())
-            {
-                act=act->getProximoNodo();
+            
+            // Insertamos igualmente al final
+
+            NodoVertice<Element> *iterAux = g;
+            while(iterAux->getProximoNodo()){
+                iterAux = iterAux->getProximoNodo();
             }
-            act->setProximoNodo(memorizarVertice);
-            memorizarVertice->setProximoNodo(NULL);
-            // igual se insertara al principio
-            /*memorizarVertice->setProximoNodo(g);
-            g = memorizarVertice;*/
+
+            iterAux->setProximoNodo(memorizarVertice);
             nVertices += 1;
         }
     }
 
-    // Cargamos el nodo adyacencia
-    nuevoArco->setCosto(c);
-    nuevoArco->setInfo(memorizarVertice);
-    nuevoArco->setProximoNodo(iterVertices->getListaAdyacencia());  // el nuevo nodo de adyacencia apunta al nodo de la lista de adyacencias de la vertice(en caso de no haber nodos, apunta a NULL)
-    iterVertices->setListaAdyacencia(nuevoArco);    // El se convierte en el primero
+    // Agregamos el nuevo arco
+    nuevoArco =  new NodoArco<Element>(memorizarVertice,c,iterVertices->getListaAdyacencia());  // Apunta al vertice w y lo guarda en la lista enlazada de v
+    iterVertices->setListaAdyacencia(nuevoArco);    // Ajustamos la lista de adyacencia de v
     mArcos += 1;    // Aumenta el numero
 
 }
