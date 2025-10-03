@@ -689,15 +689,15 @@ template <typename Element>
 inline list<Element> Grafo<Element>::getVecinos(Element e)
 {
     list<Element> vecinos;
-    bool insertadosAntes[nVertices];
+    map<NodoVertice<Element> *, bool> insertadosAntes;
     NodoVertice<Element> *iterVertice = g;
     NodoArco<Element> *iterAdy = NULL;
     bool encontrado;
 
     // Buscamos los 
 
-    for(int i =0 ; i < nVertices ; i++){
-        insertadosAntes[i] = false;
+    for(NodoVertice<Element> *iter = g; iter ; iter = iter->getProximoNodo()){
+        insertadosAntes[iter] = false;
     }
 
     while(iterVertice){
@@ -706,18 +706,18 @@ inline list<Element> Grafo<Element>::getVecinos(Element e)
 
         while(iterAdy && !encontrado){
             // en caso de estar la misma vertice e, toma todos los sucesores, es decir, la lista de adyacencia completa
-            if(iterVertice->getInfo() == e && !insertadosAntes[iterAdy->getInfo()->getInfo()]){
+            if(iterVertice->getInfo() == e && !insertadosAntes[iterAdy->getInfo()]){
                 // Inserta la vertice que esta siendo apuntada
                 vecinos.push_back(iterAdy->getInfo()->getInfo());
-                insertadosAntes[iterAdy->getInfo()->getInfo()] = true; 
+                insertadosAntes[iterAdy->getInfo()] = true; 
             }else{
                 // en caso de no serlo, es posible que el vertice contenga un nodo que apunte al vertice e
-                if(iterAdy->getInfo()->getInfo() == e && !insertadosAntes[iterVertice->getInfo()]){
+                if(iterAdy->getInfo()->getInfo() == e && !insertadosAntes[iterVertice]){
                     // Guardas el vertice que la apunta
                     vecinos.push_back(iterVertice->getInfo());
                     // En este punto no hace falta seguir iterando en la lista de adyacencia porque el nodo deseado ya fue encontrado
                     // no hay mas de un nodo que apunte a ese nodo en la misma vertice
-                    insertadosAntes[iterVertice->getInfo()] = true;
+                    insertadosAntes[iterVertice] = true;
                     encontrado = true;
                 }
             }
