@@ -34,7 +34,7 @@ class Grafo{
 
         // Este dfs esta modificado para realizar el recorrido de los puentes, utilizando el algoritmo de tarjan
         void dfsPuentes(NodoVertice<Element> *inicio, map<NodoVertice<Element>*,bool> &visitados, map<NodoVertice<Element>*,int> &desc, map<NodoVertice<Element>*,int> &low, map<NodoVertice<Element>*,NodoVertice<Element>*> &parents, list<list<Element>> &arcosRes, int &time);
-
+        void esBipartito(NodoVertice<Element> *inicio, map<NodoVertice<Element>*,bool> &visitados, map<NodoVertice<Element>*,int> &colores, bool &respuesta);    // Indica si el grafo puede ser bipartito
     private:
         NodoVertice<Element> *getVerticeInicia(){return g;}
         
@@ -92,10 +92,6 @@ class Grafo{
         list<list<Element>> getPuentes();           // Busca todos los arcos que actuan como puerte del grafo, son aquellos que, si se eliminan, el grafo pasa a ser disconexo
         bool esBipartito();                         // Indica si el grafo puede ser bipartito
         int getGradoVertice(Element v);             // Obtiene el grafo de una vertice v
-    protected:
-        // Este dfs esta modificado para realizar el recorrido de los puentes, utilizando el algoritmo de tarjan
-        void dfsPuentes(NodoVertice<Element> *inicio, map<NodoVertice<Element>*,bool> &visitados, map<NodoVertice<Element>*,int> &desc, map<NodoVertice<Element>*,int> &low, map<NodoVertice<Element>*,NodoVertice<Element>*> &parents, list<list<Element>> &arcosRes, int &time);
-        void esBipartito(NodoVertice<Element> *inicio, map<NodoVertice<Element>*,bool> &visitados, map<NodoVertice<Element>*,int> &colores, bool &respuesta);    // Indica si el grafo puede ser bipartito
         
         //Operadores
         bool operator==(const Grafo<Element> &grafo);                        //compara dos grafos y retorna verdadero en caso de ser iguales
@@ -278,14 +274,14 @@ void Grafo<Element>::agregarArco(Element v, Element w, float c)
 {
     // if(!g) return;  // El grafo esta vacio, no hay vertices para enlazar
 
-    NodoVertice<Element> *iterVertices = g,*anterior=g;   // puntero iterador desde nodo apuntado por el grafo
+    NodoVertice<Element> *iterVertices = g;   // puntero iterador desde nodo apuntado por el grafo
     NodoArco<Element> *nuevoArco = NULL;   // puntero para crear el nuevo arco
     NodoVertice<Element> *memorizarVertice = NULL;    // Este puntero servira para guardar la direccion del vertice w
 
     while(iterVertices && iterVertices->getInfo() != v){
         if(iterVertices->getInfo() == w)    // En caso de encontrar el vertice w antes del vertice v, guardarlo para ahorrar tiempo
             memorizarVertice = iterVertices;
-        anterior=iterVertices;
+        //anterior=iterVertices;
         iterVertices = iterVertices->getProximoNodo();
     }
 
