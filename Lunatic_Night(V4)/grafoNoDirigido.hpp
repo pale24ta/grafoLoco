@@ -26,6 +26,7 @@ class GrafoNoDirigido : public Grafo<Element>{
         ~GrafoNoDirigido();
         list<Element> getVecinos(Element e);
         void agregarArco(Element v, Element w, float c);    // la insercion de arcos sera diferente ya que tendremos que insertar un nodo adyacencia apuntando al otro
+        void agregarArco(Element v, Element w);
         void eliminarArco(Element v,Element w);     // Eliminar el arco es buscar el vertice inicial y luego el vertice correspondiente O(n + m)
         GrafoNoDirigido<int> getMapGrafo(); //retorna un el mismo grafo con valores mapeados
         list<list<Element> > getArcos();    // Devuelve la lista de arcos del grafo
@@ -189,33 +190,29 @@ void GrafoNoDirigido<Element>::eliminarArco(Element v,Element w){     // Elimina
 template <typename Element>
 list<Element> GrafoNoDirigido<Element>::getVecinos(Element e){
 
-    list<Element> vecinos;
+    // list<Element> vecinos;
 
-    if(!this->g) return vecinos;
-    // aqui basta buscar la vertice e
+    // if(!this->g) return vecinos;
+    // // aqui basta buscar la vertice e
 
 
-    NodoVertice<Element> *iterVertice = this->g;
-    NodoArco<Element> *iterListaAdy = NULL;
+    // NodoVertice<Element> *iterVertice = this->g;
+    // NodoArco<Element> *iterListaAdy = NULL;
 
-    while(iterVertice && iterVertice->getInfo() != e){
-        iterVertice = iterVertice->getProximoNodo();
-    }
+    // while(iterVertice && iterVertice->getInfo() != e){
+    //     iterVertice = iterVertice->getProximoNodo();
+    // }
 
-    if(iterVertice){
-        iterListaAdy = iterVertice->getListaAdyacencia();
+    // if(iterVertice){
+    //     iterListaAdy = iterVertice->getListaAdyacencia();
         
-        while(iterListaAdy){
-            vecinos.push_back(iterListaAdy->getInfo()->getInfo());
-            iterListaAdy = iterListaAdy->getProximoNodo();
-        }
-    }
-    return vecinos;
+    //     while(iterListaAdy){
+    //         vecinos.push_back(iterListaAdy->getInfo()->getInfo());
+    //         iterListaAdy = iterListaAdy->getProximoNodo();
+    //     }
+    // }
+    return this->getSucesores(e);
 }
-
-
-
-#endif
 
 template <typename Element>
 inline GrafoNoDirigido<int> GrafoNoDirigido<Element>::getMapGrafo()
@@ -282,4 +279,14 @@ inline list<list<Element> > GrafoNoDirigido<Element>::getArcos()
         iterVertice = iterVertice->getProximoNodo();
     }
     return arcos;
+}
+
+
+
+#endif
+
+template <typename Element>
+inline void GrafoNoDirigido<Element>::agregarArco(Element v, Element w)
+{
+    GrafoNoDirigido<Element>::agregarArco(v,w,0);
 }
