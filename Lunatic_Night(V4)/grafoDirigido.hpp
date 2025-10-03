@@ -30,6 +30,9 @@ class Grafo{
         void copiarVertices(const Grafo<Element> &grafo,map<NodoVertice<Element>*,NodoVertice<Element>*> &espejo);
         void copiarArcos(const Grafo<Element> &grafo,map<NodoVertice<Element>*,NodoVertice<Element>*> &espejo);
 
+        list<Element> BFS(NodoVertice<Element>* inicial,map<NodoVertice<Element>*,bool> &visitados,list<Element> &result);
+        list<Element> DFS(NodoVertice<Element>* inicial,map<NodoVertice<Element>*,bool> &visitados,list<Element> &result);
+
     private:
         NodoVertice<Element> *getVerticeInicia(){return g;}
         
@@ -55,6 +58,8 @@ class Grafo{
         //Recorridos
         list<Element> BFS();    // Versiones optimas de los recorridos, recorrido por ondas
         list<Element> DFS();    // Recorrido por profundidad
+        list<Element> BFS(Element v);
+        list<Element> DFS(Element v);
 
         //Basicos
         // Nodo: estos dos metodos que tienen virtual estan pensados para reinventarse en la clase hija de grafo, Grafo no dirigido
