@@ -35,6 +35,8 @@ class Grafo{
         // Este dfs esta modificado para realizar el recorrido de los puentes, utilizando el algoritmo de tarjan
         void dfsPuentes(NodoVertice<Element> *inicio, map<NodoVertice<Element>*,bool> &visitados, map<NodoVertice<Element>*,int> &desc, map<NodoVertice<Element>*,int> &low, map<NodoVertice<Element>*,NodoVertice<Element>*> &parents, list<list<Element>> &arcosRes, int &time);
         void esBipartito(NodoVertice<Element> *inicio, map<NodoVertice<Element>*,bool> &visitados, map<NodoVertice<Element>*,int> &colores, bool &respuesta);    // Indica si el grafo puede ser bipartito
+        void getCamino(map<NodoVertice<Element>*,bool> &visitados,NodoVertice<Element>* v,NodoVertice<Element>* w,map<NodoVertice<Element>*,NodoVertice<Element>*> &recorrido);//procedimiento auxiliar para allar el camino mas corto entre dos vertices
+        list<Element> getCamino(map<NodoVertice<Element>*,NodoVertice<Element>*> &recorrido,NodoVertice<Element>* v,NodoVertice<Element>* w);//retorna una lista con el camino de v a w
     private:
         NodoVertice<Element> *getVerticeInicia(){return g;}
         
@@ -97,7 +99,8 @@ class Grafo{
         list<Element> getCaminoMasCorto(Element inicio, Element fin);   // Busca el camino mas corto entre dos vertices (grafos Sin ponderacion)
 =======
         float getPeso();                              //Obtiene la sumatoria de los pesos del Grafo
-        list<Element> getCamino(Element v,Element w);
+        list<Element> getCamino(Element v,Element w);//Obtiene el camino mas corto entre dos vertices (Si no existe camino retorna una lista vacia)
+
 >>>>>>> 4af8b98 (se añadio getPeso)
         //Operadores
         bool operator==(const Grafo<Element> &grafo);                        //compara dos grafos y retorna verdadero en caso de ser iguales
@@ -1428,6 +1431,91 @@ float Grafo<Element>::getPeso(){
     }
     
     return peso;
+}
+template <typename Element>
+list<Element> Grafo<Element>::getCamino(Element v,Element w){
+    list<Element> result;
+    if(!g)
+        return result;  //si el grafo es vacio no existe camino
+    if(v==w){
+        result.push_front(v);   //si ambos vertices son el mismo, se retorna un lista con un solo elemento (el inicio es el final)
+        return result;
+    }
+    NodoVertice<Element>*inicio=NULL,*destino=NULL,*act;
+    map<NodoVertice<Element>*,bool> visitados;                  //mapa que marca los vertices visitados
+    map<NodoVertice<Element>*,NodoVertice<Element>*> recorrido; //mapa que obtiene los arcos que generan un recorrido de v a w
+
+    act=g;
+    //ciclo que llena el mapa de visitados y busca los nodos que contienes los elementos v y w
+    while (act)
+    {
+        visitados[act]=false;
+        if(act->getInfo() == v)
+            inicio=act;
+        if(act->getInfo() == w)
+            destino=act;
+        act=act->getProximoNodo();
+    }
+    //si alguno de los dos elementos no se encuentra en el grafo, no existe camino entre ellos
+    if(!inicio || !destino)
+        return result;
+
+    getCamino(visitados,inicio,destino,recorrido);   //utiliza recorrido BFS para encontrar en camino mas corto
+    if(visitados[destino])                           //si w se encuentra en la misma componente conexa que v, entoces existe un camino
+        result = getCamino(recorrido,inicio,destino);//retorna el camino entre v y w
+    
+    return result;
+}
+
+template <typename Element>
+void Grafo<Element>::getCamino(map<NodoVertice<Element>*,bool> &visitados,NodoVertice<Element>* v,NodoVertice<Element>* w,map<NodoVertice<Element>*,NodoVertice<Element>*> &recorrido){
+    queue<NodoVertice<Element>*> cola;  //cola de vertices
+    NodoVertice<Element>* act;          //iterador de vertices
+    NodoArco<Element>*arcoAct;          //iterador de arcos
+    bool found=false;                   //bandera que indica si se encontro el vertice w
+
+    cola.push(v);
+
+    while (!cola.empty() && !found)
+    {
+        act=cola.front();
+        cola.pop();
+
+            if (!visitados[act])
+            {
+            visitados[act]=true;                //marca el vertice como visitado
+            arcoAct=act->getListaAdyacencia();  //busca los sucesores
+            while (arcoAct && !found)
+            {
+                if (!visitados[arcoAct->getInfo()])
+                {
+                    recorrido[arcoAct->getInfo()]=act;  //guarda el vertice en el mapa sucesor:predecesor
+                    //si se encontro el vertice destino se sale de los ciclos
+                    if(arcoAct->getInfo() == w)
+                        found=true;
+                    cola.push(arcoAct->getInfo());
+                }
+                arcoAct=arcoAct->getProximoNodo();
+            }
+            
+        }
+
+    }
+    visitados[w] = found;       //marca el vertice destino como visitado en caso de que lo halla encontrado
+}
+template <typename Element>
+list<Element> Grafo<Element>::getCamino(map<NodoVertice<Element>*,NodoVertice<Element>*> &recorrido,NodoVertice<Element>* v,NodoVertice<Element>* w){
+    list<Element> result;
+    NodoVertice<Element>*act=w;  //se inicializa con el vertice destino
+    //ciclo que crea el camino
+    while (act!=v)
+    {
+        result.push_front(act->getInfo());  //se inserta el vertice en la lista que forma el camino
+        act=recorrido[act];     //El nodo va adquiriendo el valor de su predecesor, generando un camino de w a v 
+                                //y se inserta en la primera posicion para invertir el camino
+    }
+    result.push_front(act->getInfo());
+    return result;
 }
 #endif
 

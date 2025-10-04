@@ -58,6 +58,14 @@ int main(){
     }
     cout<<endl;
 
+    cout<<"Camino: ";
+    vertices=g.getCamino('E','J');
+    for (char e : vertices)
+    {
+        cout<< e << ", ";
+    }
+    cout<<endl;
+
     cout<<"BFS: ";
     vertices=g.BFS('A');
     for (char e : vertices)
