@@ -4,7 +4,7 @@
 #include "nodoGrafo.hpp"
 #include <iostream>
 #include <unordered_map>
-#include <map>
+#include <unordered_map>
 #include <set>
 #include <algorithm>
 #include <list>
@@ -23,20 +23,20 @@ class Grafo{
         int nVertices,mArcos;
         bool verificarExistenciaElementoEnCola(queue<Element> cola, Element info); // Metodo privado para verificar la existerncia de ese elemento en la cola, implicando que hay que desenconlar para encontrarla
         
-        void copiarVertices(const Grafo<Element> &grafo,map<NodoVertice<Element>*,NodoVertice<Element>*> &espejo);
-        void copiarArcos(const Grafo<Element> &grafo,map<NodoVertice<Element>*,NodoVertice<Element>*> &espejo);
+        void copiarVertices(const Grafo<Element> &grafo,unordered_map<NodoVertice<Element>*,NodoVertice<Element>*> &espejo);
+        void copiarArcos(const Grafo<Element> &grafo,unordered_map<NodoVertice<Element>*,NodoVertice<Element>*> &espejo);
         //Recorridos auxiliares
-        void BFS(NodoVertice<Element>* inicial,map<NodoVertice<Element>*,bool> &visitados,list<Element> &result);
-        void DFS(NodoVertice<Element>* inicial,map<NodoVertice<Element>*,bool> &visitados,list<Element> &result);
-        void compConexDFS(map<NodoVertice<Element>*,bool> &visistados,list<Element> &compConexa,NodoVertice<Element>* inicial); //busca recursivamente elementos de una componente conexa
-        void compConexDFS(map<NodoVertice<Element>*,bool> &visistados,NodoVertice<Element>* inicial);
-        void llenarMapa(map<NodoVertice<Element>*,bool> &visitados,NodoVertice<Element>* &inicial,Element v);       //llena un mapa de no visitados y guarda la posicion del vertice inicial
+        void BFS(NodoVertice<Element>* inicial,unordered_map<NodoVertice<Element>*,bool> &visitados,list<Element> &result);
+        void DFS(NodoVertice<Element>* inicial,unordered_map<NodoVertice<Element>*,bool> &visitados,list<Element> &result);
+        void compConexDFS(unordered_map<NodoVertice<Element>*,bool> &visistados,list<Element> &compConexa,NodoVertice<Element>* inicial); //busca recursivamente elementos de una componente conexa
+        void compConexDFS(unordered_map<NodoVertice<Element>*,bool> &visistados,NodoVertice<Element>* inicial);
+        void llenarMapa(unordered_map<NodoVertice<Element>*,bool> &visitados,NodoVertice<Element>* &inicial,Element v);       //llena un mapa de no visitados y guarda la posicion del vertice inicial
 
         // Este dfs esta modificado para realizar el recorrido de los puentes, utilizando el algoritmo de tarjan
-        void dfsPuentes(NodoVertice<Element> *inicio, map<NodoVertice<Element>*,bool> &visitados, map<NodoVertice<Element>*,int> &desc, map<NodoVertice<Element>*,int> &low, map<NodoVertice<Element>*,NodoVertice<Element>*> &parents, list<list<Element>> &arcosRes, int &time);
-        void esBipartito(NodoVertice<Element> *inicio, map<NodoVertice<Element>*,bool> &visitados, map<NodoVertice<Element>*,int> &colores, bool &respuesta);    // Indica si el grafo puede ser bipartito
-        void getCamino(map<NodoVertice<Element>*,bool> &visitados,NodoVertice<Element>* v,NodoVertice<Element>* w,map<NodoVertice<Element>*,NodoVertice<Element>*> &recorrido);//procedimiento auxiliar para allar el camino mas corto entre dos vertices
-        list<Element> getCamino(map<NodoVertice<Element>*,NodoVertice<Element>*> &recorrido,NodoVertice<Element>* v,NodoVertice<Element>* w);//retorna una lista con el camino de v a w
+        void dfsPuentes(NodoVertice<Element> *inicio, unordered_map<NodoVertice<Element>*,bool> &visitados, unordered_map<NodoVertice<Element>*,int> &desc, unordered_map<NodoVertice<Element>*,int> &low, unordered_map<NodoVertice<Element>*,NodoVertice<Element>*> &parents, list<list<Element>> &arcosRes, int &time);
+        void esBipartito(NodoVertice<Element> *inicio, unordered_map<NodoVertice<Element>*,bool> &visitados, unordered_map<NodoVertice<Element>*,int> &colores, bool &respuesta);    // Indica si el grafo puede ser bipartito
+        void getCamino(unordered_map<NodoVertice<Element>*,bool> &visitados,NodoVertice<Element>* v,NodoVertice<Element>* w,unordered_map<NodoVertice<Element>*,NodoVertice<Element>*> &recorrido);//procedimiento auxiliar para allar el camino mas corto entre dos vertices
+        list<Element> getCamino(unordered_map<NodoVertice<Element>*,NodoVertice<Element>*> &recorrido,NodoVertice<Element>* v,NodoVertice<Element>* w);//retorna una lista con el camino de v a w
     private:
         NodoVertice<Element> *getVerticeInicia(){return g;}
         
@@ -82,8 +82,8 @@ class Grafo{
         bool esVacio();         // Metodo logico si el grafo no tiene nodos // O(1) porque solo se verifica los atributos nVertices
         bool existeVertice(Element v);    // Buscar el elemento en la lista de vertices, la lista en casos generales se encontrara desgetNVerticesada, asi que la forma mas viables es iterar en ella, O(n)
         bool existeArco(Element v, Element w);  // Buscar el vertice de adyacencia, primero buscar la vertice para luego buscar su arco O(n + m)
-        map<int,Element> getMapVertices(); //O(n)  retorna un mapa con un mapeo de los vertices
-        map<Element,int> getMapVerticesInvertido(); // Retorna el mapar pero clave =Element : contenido = numero
+        unordered_map<int,Element> getMapVertices(); //O(n)  retorna un mapa con un mapeo de los vertices
+        unordered_map<Element,int> getMapVerticesInvertido(); // Retorna el mapar pero clave =Element : contenido = numero
         Grafo<int> getMapGrafo(); //retorna un el mismo grafo con valores mapeados
         int getGradoSalida(Element v);              //retorna el grado de salida (numero de arcos que apuntan a otros Vertices)
         int getGradoEntrada(Element v);             //Retorna el grado de entrada (numnero de arcos que apuntan al Vertice)
@@ -474,7 +474,7 @@ inline void Grafo<Element>::eliminarVertice(Element v)
         if(ant){
             ant->setProximoNodo(iterador->getProximoNodo());    // cambiamos el puntero al siguiente del eliminado
         }else{
-            g->setProximoNodo(iterador->getProximoNodo());
+            g = iterador->getProximoNodo();
         }
         // Eliminamos la vertice(el metodo destructor de la clase NodoVertice esta programado para eliminar tanto los nodos adyacentes como el mismo)
         // con ello, se elimina los sucesores
@@ -587,7 +587,7 @@ float Grafo<Element>::getPesoArco(Element v, Element w)  // Encontrar el peso de
     NodoArco<Element> *iterAd = NULL;
 
     // Variable que capture el peso del arco V -> W
-    float weight = 0.0; // Inicializado en 0.0
+    float weight = -1; // Inicializado en -1, en caso de que el arco no exista
 
     // Buscamos el vertice primero
 
@@ -692,7 +692,7 @@ template <typename Element>
 inline list<Element> Grafo<Element>::getVecinos(Element e)
 {
     list<Element> vecinos;
-    map<NodoVertice<Element> *, bool> insertadosAntes;
+    unordered_map<NodoVertice<Element> *, bool> insertadosAntes;
     NodoVertice<Element> *iterVertice = g;
     NodoArco<Element> *iterAdy = NULL;
     bool encontrado;
@@ -750,8 +750,8 @@ list<Element> Grafo<Element>::getVertices(){
 }
 
 template <typename Element>
-map<int,Element> Grafo<Element>::getMapVertices(){
-    map<int,Element> mapa;
+unordered_map<int,Element> Grafo<Element>::getMapVertices(){
+    unordered_map<int,Element> mapa;
     NodoVertice<Element> *act=g;
     int i=0;
     //recorre todos los vertices del grafo
@@ -767,7 +767,7 @@ template <typename Element>
 Grafo<int> Grafo<Element>::getMapGrafo(){
     NodoVertice<Element> *act=g;
     NodoArco<Element> *adyAct;
-    map<NodoVertice<Element>*,int> mapa;
+    unordered_map<NodoVertice<Element>*,int> mapa;
     Grafo<int> grafo;
     int i=0;
     
@@ -896,9 +896,9 @@ int Grafo<Element>::getGradoEntrada(Element v){
 }
 
 template <typename Element>
-inline map<Element, int> Grafo<Element>::getMapVerticesInvertido()
+inline unordered_map<Element, int> Grafo<Element>::getMapVerticesInvertido()
 {
-    map<Element,int> diccionario;
+    unordered_map<Element,int> diccionario;
 
     NodoVertice<Element> *iterarVertices = g;
     int i = 0;
@@ -916,7 +916,7 @@ list<list<Element>> Grafo<Element>::getCompConexas(){
     list<NodoVertice<Element>*> vertices;   //lista de vertices(Nodos vertice)
     list<Element> compConexa;       //almacenara la lista auxiliar con todos los elementos de la componente conexa
     list<list<Element>> result;     //variable a retornar
-    map<NodoVertice<Element>*,bool> visitados;      //mapa para marcar los vertices visitados
+    unordered_map<NodoVertice<Element>*,bool> visitados;      //mapa para marcar los vertices visitados
     NodoVertice<Element>*act;       //nodo en el cual se iterara para llenar el mapa de visitados
 
     act=g;
@@ -941,7 +941,7 @@ list<list<Element>> Grafo<Element>::getCompConexas(){
 }
 
 template <typename Element>
-void Grafo<Element>::compConexDFS(map<NodoVertice<Element>*,bool> &visistados,list<Element> &compConexa,NodoVertice<Element>* inicial){
+void Grafo<Element>::compConexDFS(unordered_map<NodoVertice<Element>*,bool> &visistados,list<Element> &compConexa,NodoVertice<Element>* inicial){
     NodoArco<Element>* arcoAct;     //iterador de los sucesores del vertice inicial
     if (!visistados[inicial])
     {
@@ -964,7 +964,7 @@ int Grafo<Element>::getNumCompConexas(){
     list<NodoVertice<Element>*> vertices;   //lista de vertices(Nodos vertice)
     list<Element> compConexa;       //almacenara la lista auxiliar con todos los elementos de la componente conexa
     int result=0;     //variable a retornar
-    map<NodoVertice<Element>*,bool> visitados;      //mapa para marcar los vertices visitados
+    unordered_map<NodoVertice<Element>*,bool> visitados;      //mapa para marcar los vertices visitados
     NodoVertice<Element>*act;       //nodo en el cual se iterara para llenar el mapa de visitados
 
     act=g;
@@ -1000,9 +1000,9 @@ inline list<list<Element>> Grafo<Element>::getPuentes()
     // En caso de ser un grafo vacio
     if(!g) return arcosResultados;
 
-    map<NodoVertice<Element>*,bool> visitados;  // Mapa de visitados
-    map<NodoVertice<Element>*,int>  desc, low;  // Estos mapas seran fundamentales, el primero des tiempo de descubrimiento y el otro el minimo alcance
-    map<NodoVertice<Element>*,NodoVertice<Element>*> parents;   // Mapa de las vertices que son padre de otras vertices
+    unordered_map<NodoVertice<Element>*,bool> visitados;  // Mapa de visitados
+    unordered_map<NodoVertice<Element>*,int>  desc, low;  // Estos mapas seran fundamentales, el primero des tiempo de descubrimiento y el otro el minimo alcance
+    unordered_map<NodoVertice<Element>*,NodoVertice<Element>*> parents;   // Mapa de las vertices que son padre de otras vertices
 
     // inicializamos los mapas
 
@@ -1029,8 +1029,8 @@ template <typename Element>
 inline bool Grafo<Element>::esBipartito()
 {
     // Creamos los mapas
-    map<NodoVertice<Element>*,bool> visitados;
-    map<NodoVertice<Element>*,int> colores;
+    unordered_map<NodoVertice<Element>*,bool> visitados;
+    unordered_map<NodoVertice<Element>*,int> colores;
     // la respuesta para el grafo
     bool respuesta = true;
 
@@ -1078,7 +1078,7 @@ inline list<Element> Grafo<Element>::getCaminoMasCorto(Element inicio, Element f
 {
         int i;
     list<Element> vertices, sucesores, caminoActual;
-    map<Element,bool> visitados;  // Mapa de visitados
+    unordered_map<Element,bool> visitados;  // Mapa de visitados
     queue<list<Element>> cola;   //cola de listas para guardar los caminos
 
     vertices = this->getVertices(); //obtener la lista de vertices del grafo
@@ -1124,7 +1124,7 @@ inline list<Element> Grafo<Element>::getCaminoMasCorto(Element inicio, Element f
 }   
 
 template <typename Element>
-void Grafo<Element>::compConexDFS(map<NodoVertice<Element>*,bool> &visistados,NodoVertice<Element>* inicial){
+void Grafo<Element>::compConexDFS(unordered_map<NodoVertice<Element>*,bool> &visistados,NodoVertice<Element>* inicial){
     NodoArco<Element>* arcoAct;
     if (!visistados[inicial])
     {
@@ -1141,7 +1141,7 @@ void Grafo<Element>::compConexDFS(map<NodoVertice<Element>*,bool> &visistados,No
 }
 
 template <typename Element>
-inline void Grafo<Element>::dfsPuentes(NodoVertice<Element> *inicio, map<NodoVertice<Element> *, bool> &visitados, map<NodoVertice<Element> *, int> &desc, map<NodoVertice<Element> *, int> &low, map<NodoVertice<Element> *, NodoVertice<Element> *> &parents, list<list<Element> > &arcosRes, int &time)
+inline void Grafo<Element>::dfsPuentes(NodoVertice<Element> *inicio, unordered_map<NodoVertice<Element> *, bool> &visitados, unordered_map<NodoVertice<Element> *, int> &desc, unordered_map<NodoVertice<Element> *, int> &low, unordered_map<NodoVertice<Element> *, NodoVertice<Element> *> &parents, list<list<Element> > &arcosRes, int &time)
 {
     visitados[inicio] = true;
     desc[inicio] = time;
@@ -1174,7 +1174,7 @@ inline void Grafo<Element>::dfsPuentes(NodoVertice<Element> *inicio, map<NodoVer
     }
 }
 template <typename Element>
-inline void Grafo<Element>::esBipartito(NodoVertice<Element> *inicio, map<NodoVertice<Element> *, bool> &visitados, map<NodoVertice<Element> *, int> &colores, bool &respuesta)
+inline void Grafo<Element>::esBipartito(NodoVertice<Element> *inicio, unordered_map<NodoVertice<Element> *, bool> &visitados, unordered_map<NodoVertice<Element> *, int> &colores, bool &respuesta)
 {
     queue<NodoVertice<Element>*> recorrido;
 
@@ -1260,7 +1260,7 @@ Grafo<Element>& Grafo<Element>::operator=(const Grafo<Element> &grafo){
     }
     nVertices=grafo.nVertices;
     mArcos=grafo.mArcos;
-    map<NodoVertice<Element>*,NodoVertice<Element>*> espejo;
+    unordered_map<NodoVertice<Element>*,NodoVertice<Element>*> espejo;
     copiarVertices(grafo,espejo);
     copiarArcos(grafo,espejo);
     
@@ -1268,7 +1268,7 @@ Grafo<Element>& Grafo<Element>::operator=(const Grafo<Element> &grafo){
 }
 
 template <typename Element>
-void Grafo<Element>::copiarVertices(const Grafo<Element> &grafo,map<NodoVertice<Element>*,NodoVertice<Element>*> &espejo){
+void Grafo<Element>::copiarVertices(const Grafo<Element> &grafo,unordered_map<NodoVertice<Element>*,NodoVertice<Element>*> &espejo){
     NodoVertice<Element>*sig,*nuevo;
     NodoVertice<Element>*anterior=NULL;
     sig = grafo.g;
@@ -1288,7 +1288,7 @@ void Grafo<Element>::copiarVertices(const Grafo<Element> &grafo,map<NodoVertice<
 }
 
 template <typename Element>
-void Grafo<Element>::copiarArcos(const Grafo<Element> &grafo, map<NodoVertice<Element>*, NodoVertice<Element>*> &espejo){
+void Grafo<Element>::copiarArcos(const Grafo<Element> &grafo, unordered_map<NodoVertice<Element>*, NodoVertice<Element>*> &espejo){
     NodoVertice<Element>* act = grafo.g;
     NodoVertice<Element>* newAct = g;
     
@@ -1321,7 +1321,7 @@ void Grafo<Element>::copiarArcos(const Grafo<Element> &grafo, map<NodoVertice<El
 }
 
 template <typename Element>
-void Grafo<Element>::llenarMapa(map<NodoVertice<Element>*,bool> &visitados,NodoVertice<Element>* &inicial,Element v){
+void Grafo<Element>::llenarMapa(unordered_map<NodoVertice<Element>*,bool> &visitados,NodoVertice<Element>* &inicial,Element v){
     NodoVertice<Element>*act;
 
     act=g;
@@ -1338,7 +1338,7 @@ void Grafo<Element>::llenarMapa(map<NodoVertice<Element>*,bool> &visitados,NodoV
 template <typename Element>
 list<Element> Grafo<Element>::BFS(Element v){
     NodoVertice<Element>*inicial=NULL;
-    map<NodoVertice<Element>*,bool> visitados;
+    unordered_map<NodoVertice<Element>*,bool> visitados;
     list<Element> result;
 
     llenarMapa(visitados,inicial,v);
@@ -1347,7 +1347,7 @@ list<Element> Grafo<Element>::BFS(Element v){
     return result;
 }
 template <typename Element>
-void Grafo<Element>::BFS(NodoVertice<Element>* inicial,map<NodoVertice<Element>*,bool> &visitados,list<Element> &result){
+void Grafo<Element>::BFS(NodoVertice<Element>* inicial,unordered_map<NodoVertice<Element>*,bool> &visitados,list<Element> &result){
     NodoArco<Element> *arcoAct;
     queue<NodoVertice<Element>*> cola;
 
@@ -1381,7 +1381,7 @@ void Grafo<Element>::BFS(NodoVertice<Element>* inicial,map<NodoVertice<Element>*
 template <typename Element>
 list<Element> Grafo<Element>::DFS(Element v){
     NodoVertice<Element>*inicial=NULL;
-    map<NodoVertice<Element>*,bool> visitados;
+    unordered_map<NodoVertice<Element>*,bool> visitados;
     list<Element> result;
 
     llenarMapa(visitados,inicial,v);
@@ -1390,7 +1390,7 @@ list<Element> Grafo<Element>::DFS(Element v){
     return result;
 }
 template <typename Element>
-void Grafo<Element>::DFS(NodoVertice<Element>* inicial,map<NodoVertice<Element>*,bool> &visitados,list<Element> &result){
+void Grafo<Element>::DFS(NodoVertice<Element>* inicial,unordered_map<NodoVertice<Element>*,bool> &visitados,list<Element> &result){
     NodoArco<Element> *arcoAct;
 
     if (!visitados[inicial])
@@ -1439,8 +1439,8 @@ list<Element> Grafo<Element>::getCamino(Element v,Element w){
         return result;
     }
     NodoVertice<Element>*inicio=NULL,*destino=NULL,*act;
-    map<NodoVertice<Element>*,bool> visitados;                  //mapa que marca los vertices visitados
-    map<NodoVertice<Element>*,NodoVertice<Element>*> recorrido; //mapa que obtiene los arcos que generan un recorrido de v a w
+    unordered_map<NodoVertice<Element>*,bool> visitados;                  //mapa que marca los vertices visitados
+    unordered_map<NodoVertice<Element>*,NodoVertice<Element>*> recorrido; //mapa que obtiene los arcos que generan un recorrido de v a w
 
     act=g;
     //ciclo que llena el mapa de visitados y busca los nodos que contienes los elementos v y w
@@ -1465,7 +1465,7 @@ list<Element> Grafo<Element>::getCamino(Element v,Element w){
 }
 
 template <typename Element>
-void Grafo<Element>::getCamino(map<NodoVertice<Element>*,bool> &visitados,NodoVertice<Element>* v,NodoVertice<Element>* w,map<NodoVertice<Element>*,NodoVertice<Element>*> &recorrido){
+void Grafo<Element>::getCamino(unordered_map<NodoVertice<Element>*,bool> &visitados,NodoVertice<Element>* v,NodoVertice<Element>* w,unordered_map<NodoVertice<Element>*,NodoVertice<Element>*> &recorrido){
     queue<NodoVertice<Element>*> cola;  //cola de vertices
     NodoVertice<Element>* act;          //iterador de vertices
     NodoArco<Element>*arcoAct;          //iterador de arcos
@@ -1501,7 +1501,7 @@ void Grafo<Element>::getCamino(map<NodoVertice<Element>*,bool> &visitados,NodoVe
     visitados[w] = found;       //marca el vertice destino como visitado en caso de que lo halla encontrado
 }
 template <typename Element>
-list<Element> Grafo<Element>::getCamino(map<NodoVertice<Element>*,NodoVertice<Element>*> &recorrido,NodoVertice<Element>* v,NodoVertice<Element>* w){
+list<Element> Grafo<Element>::getCamino(unordered_map<NodoVertice<Element>*,NodoVertice<Element>*> &recorrido,NodoVertice<Element>* v,NodoVertice<Element>* w){
     list<Element> result;
     NodoVertice<Element>*act=w;  //se inicializa con el vertice destino
     //ciclo que crea el camino
