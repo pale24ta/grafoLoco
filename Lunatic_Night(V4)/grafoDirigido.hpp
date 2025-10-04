@@ -170,7 +170,7 @@ template <typename Element>
 inline bool Grafo<Element>::verificarExistenciaElementoEnCola(queue<Element> cola, Element info)
 {
     while(!cola.empty()){
-        if(cola.front() = info)
+        if(cola.front() == info)
             return true;
 
         cola.pop();
@@ -260,16 +260,15 @@ void Grafo<Element>::agregarVertice(Element v)
     NodoVertice<Element> *nuevoVertice = new NodoVertice<Element>(v);   // Creamos el nodo asignando memoria
     NodoVertice<Element> *ant=g;
 
-    while(ant && ant->getProximoNodo()){
-        ant = ant->getProximoNodo();
-    }
-
     if(ant){
         // en caso de estar en la ultima vertice de la lista
+        while(ant && ant->getProximoNodo()){
+        ant = ant->getProximoNodo();
+        }
         ant->setProximoNodo(nuevoVertice);
     }else{
         // caso contrario, osea que seria un grafo vacio inicialmente
-        nuevoVertice->setProximoNodo(g);
+        nuevoVertice->setProximoNodo(NULL);
         g = nuevoVertice;
     }
 
@@ -583,7 +582,7 @@ inline bool Grafo<Element>::existeArco(Element v, Element w)
 template <typename Element>
 float Grafo<Element>::getPesoArco(Element v, Element w)  // Encontrar el peso del arco existente de V -> W
 {
-    if(!g)  return false;   // Grafo vacio
+    if(!g)  return 0.0;   // Grafo vacio
 
     // Puntero para iterar vertice y nodo Adyacencia
     NodoVertice<Element> *iterVer = g;
@@ -789,7 +788,7 @@ Grafo<int> Grafo<Element>::getMapGrafo(){
         adyAct=act->getListaAdyacencia();
         while (adyAct)  //recorre todos los arcos de los vertices
         {
-            grafo.agregarArco(mapa[act],mapa[adyAct->getInfo()],this->getPesoArco(act->getInfo(),adyAct->getInfo()->getInfo()));    //crea el arco mapeado
+            grafo.agregarArco(mapa[act],mapa[adyAct->getInfo()],adyAct->getPeso());    //crea el arco mapeado
             adyAct=adyAct->getProximoNodo();
         }
         act=act->getProximoNodo();
@@ -1517,6 +1516,8 @@ list<Element> Grafo<Element>::getCamino(unordered_map<NodoVertice<Element>*,Nodo
     result.push_front(act->getInfo());
     return result;
 }
+
+
 #endif
 
 

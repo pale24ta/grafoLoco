@@ -19,6 +19,9 @@ using namespace std;
 
 template <typename Element>
 class GrafoNoDirigido : public Grafo<Element>{
+    private:
+        NodoVertice<Element>* getPosElement(Element v); //retrona un puntero a la posicion del elemento
+        NodoVertice<Element>* getUltimaPos();   //retorna el ultimo nodo insertado
 
     public:
         GrafoNoDirigido();
@@ -26,7 +29,7 @@ class GrafoNoDirigido : public Grafo<Element>{
         ~GrafoNoDirigido();
         list<Element> getVecinos(Element e);
         void agregarArco(Element v, Element w, float c);    // la insercion de arcos sera diferente ya que tendremos que insertar un nodo adyacencia apuntando al otro
-        void agregarArco(Element v, Element w);
+        void agregarArco(Element v, Element w) {agregarArco(v,w,1);}
         void eliminarArco(Element v,Element w);     // Eliminar el arco es buscar el vertice inicial y luego el vertice correspondiente O(n + m)
         GrafoNoDirigido<int> getMapGrafo(); //retorna un el mismo grafo con valores mapeados
         list<list<Element> > getArcos();    // Devuelve la lista de arcos del grafo
@@ -53,7 +56,60 @@ void GrafoNoDirigido<Element>::agregarArco(Element v, Element w, float c){
     if(this->existeArco(v,w) && this->existeArco(w,v)) return;
     // Para esta union de arcos, hay que hacer tal que v -> w y w -> v
 
-    NodoVertice<Element> *iterVerticeA = this->g, *iterVerticeB = NULL;
+    NodoVertice<Element>*vertV,*vertW,*ultPos;
+    if (!this->g)
+    {
+        vertV= new NodoVertice<Element>(v);
+        vertW= new NodoVertice<Element>(w);
+        this->g=vertV;
+        vertV->setProximoNodo(vertW);
+        this->nVertices=2;
+    }else{
+            vertV=getPosElement(v);
+        if(!vertV){
+            ultPos=getUltimaPos();
+            vertV= new NodoVertice<Element>(v);
+            ultPos->setProximoNodo(vertV);
+            this->nVertices++;
+        }
+        vertW=getPosElement(w);
+        if(!vertW){
+            ultPos=getUltimaPos();
+            vertW= new NodoVertice<Element>(w);
+            ultPos->setProximoNodo(vertW);
+            this->nVertices++;
+        }
+    }
+    
+    
+
+    for (int i = 0; i < 2; i++)
+    {
+        NodoArco<Element>*nuevoArco,*arcoAnt;
+        NodoVertice<Element> *vertA,*vertB;
+        switch (i)
+        {
+        case 0:
+            vertA=vertV;
+            vertB=vertW;
+            break;
+        
+        default:
+            vertA=vertW;
+            vertB=vertV;
+            break;
+        }
+        arcoAnt= vertA->getListaAdyacencia();
+        nuevoArco= new NodoArco<Element>(vertB);
+        nuevoArco->setPeso(c);
+        nuevoArco->setProximoNodo(arcoAnt);
+        vertA->setListaAdyacencia(nuevoArco);
+    }
+    
+    this->mArcos++;
+
+
+    /*NodoVertice<Element> *iterVerticeA = this->g, *iterVerticeB = NULL;
     NodoArco<Element> *nuevoArco = NULL;
     Element aux;
 
@@ -125,7 +181,7 @@ void GrafoNoDirigido<Element>::agregarArco(Element v, Element w, float c){
     // w -> v
     nuevoArco = new NodoArco<Element>(iterVerticeA,c,iterVerticeB->getListaAdyacencia());
     iterVerticeB->setListaAdyacencia(nuevoArco);
-    this->mArcos += 1;
+    this->mArcos += 1;*/
 }
 
 template<typename Element>
@@ -259,9 +315,29 @@ inline list<list<Element> > GrafoNoDirigido<Element>::getArcos()
 }
 
 template <typename Element>
-inline void GrafoNoDirigido<Element>::agregarArco(Element v, Element w)
-{
-    GrafoNoDirigido<Element>::agregarArco(v,w,0);
+NodoVertice<Element>* GrafoNoDirigido<Element>::getPosElement(Element v){
+    if(!this->g) return NULL;
+    NodoVertice<Element>* act=this->g;
+    bool found=false;
+    while (act && !found)
+    {
+        if(act->getInfo()==v)
+            found= true;
+        else
+            act=act->getProximoNodo();
+    }
+    return act;
+}
+
+template <typename Element>
+NodoVertice<Element>* GrafoNoDirigido<Element>::getUltimaPos(){
+    if(!this->g) return NULL;
+    NodoVertice<Element>* act=this->g;
+    while (act && act->getProximoNodo())
+    {
+        act=act->getProximoNodo();
+    }
+    return act;
 }
 
 #endif
