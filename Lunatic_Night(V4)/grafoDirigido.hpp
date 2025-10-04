@@ -93,7 +93,7 @@ class Grafo{
         bool esConexo();
         list<list<Element>> getPuentes();           // Busca todos los arcos que actuan como puerte del grafo, son aquellos que, si se eliminan, el grafo pasa a ser disconexo
         bool esBipartito();                         // Indica si el grafo puede ser bipartito
-        int getGradoVertice(Element v);             // Obtiene el grafo de una vertice v
+        int getGradoVertice(Element v);             // Obtiene el grado de una vertice v
         // Inclusion de Jesus Munoz
         list<Element> getCaminoMasCorto(Element inicio, Element fin);   // Busca el camino mas corto entre dos vertices (grafos Sin ponderacion)
         float getPeso();                              //Obtiene la sumatoria de los pesos del Grafo
@@ -1515,4 +1515,5 @@ list<Element> Grafo<Element>::getCamino(map<NodoVertice<Element>*,NodoVertice<El
     return result;
 }
 #endif
+
 
