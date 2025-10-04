@@ -15,7 +15,7 @@ using namespace std;
     GRAFO DIRIGIDO
 */
 //yisus mongolo
-// Probando el pull requiest
+// probando otra cosa
 template<typename Element>
 class Grafo{
     protected:
