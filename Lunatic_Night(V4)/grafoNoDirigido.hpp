@@ -161,7 +161,6 @@ void GrafoNoDirigido<Element>::eliminarArco(Element v,Element w){     // Elimina
             iterVer = iterAdyAct->getInfo();
 
             delete iterAdyAct;  // Eliminamos el nodo
-            this->mArcos -= 1;
             
             iterAdyAct = iterVer->getListaAdyacencia();
             iterAdyAnt = NULL;
@@ -189,28 +188,6 @@ void GrafoNoDirigido<Element>::eliminarArco(Element v,Element w){     // Elimina
 
 template <typename Element>
 list<Element> GrafoNoDirigido<Element>::getVecinos(Element e){
-
-    // list<Element> vecinos;
-
-    // if(!this->g) return vecinos;
-    // // aqui basta buscar la vertice e
-
-
-    // NodoVertice<Element> *iterVertice = this->g;
-    // NodoArco<Element> *iterListaAdy = NULL;
-
-    // while(iterVertice && iterVertice->getInfo() != e){
-    //     iterVertice = iterVertice->getProximoNodo();
-    // }
-
-    // if(iterVertice){
-    //     iterListaAdy = iterVertice->getListaAdyacencia();
-        
-    //     while(iterListaAdy){
-    //         vecinos.push_back(iterListaAdy->getInfo()->getInfo());
-    //         iterListaAdy = iterListaAdy->getProximoNodo();
-    //     }
-    // }
     return this->getSucesores(e);
 }
 
@@ -219,7 +196,7 @@ inline GrafoNoDirigido<int> GrafoNoDirigido<Element>::getMapGrafo()
 {
     NodoVertice<Element> *act= this->g;
     NodoArco<Element> *adyAct;
-    map<NodoVertice<Element>*,int> mapa;
+    unordered_map<NodoVertice<Element>*,int> mapa;
     GrafoNoDirigido<int> grafo;
     int i=0;
     
@@ -281,12 +258,10 @@ inline list<list<Element> > GrafoNoDirigido<Element>::getArcos()
     return arcos;
 }
 
-
-
-#endif
-
 template <typename Element>
 inline void GrafoNoDirigido<Element>::agregarArco(Element v, Element w)
 {
     GrafoNoDirigido<Element>::agregarArco(v,w,0);
 }
+
+#endif
