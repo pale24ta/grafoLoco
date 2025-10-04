@@ -17,6 +17,8 @@ using namespace std;
 //yisus mongolo
 // probando otra cosa
 // Modificacion
+
+// Backtraqueate
 template<typename Element>
 class Grafo{
     protected:
