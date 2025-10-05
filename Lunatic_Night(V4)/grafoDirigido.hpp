@@ -40,7 +40,7 @@ class Grafo{
         void esBipartito(NodoVertice<Element> *inicio, unordered_map<NodoVertice<Element>*,bool> &visitados, unordered_map<NodoVertice<Element>*,int> &colores, bool &respuesta);    // Indica si el grafo puede ser bipartito
         void getCamino(unordered_map<NodoVertice<Element>*,bool> &visitados,NodoVertice<Element>* v,NodoVertice<Element>* w,unordered_map<NodoVertice<Element>*,NodoVertice<Element>*> &recorrido);//procedimiento auxiliar para allar el camino mas corto entre dos vertices
         list<Element> getCamino(unordered_map<NodoVertice<Element>*,NodoVertice<Element>*> &recorrido,NodoVertice<Element>* v,NodoVertice<Element>* w);//retorna una lista con el camino de v a w
-        void caminoDijkstra(NodoVertice<Element>* inicio, NodoVertice<Element>* destino, map<NodoVertice<Element>*, bool> &visitados, list<Element> &result, float &costo);
+        void caminoDijkstra(NodoVertice<Element>* inicio, NodoVertice<Element>* destino, unordered_map<NodoVertice<Element>*, bool> &visitados, list<Element> &result, float &costo);
 
     private:
         NodoVertice<Element> *getVerticeInicia(){return g;}
@@ -1521,7 +1521,7 @@ template <typename Element>
 list<Element> Grafo<Element>::getCaminoDijkstra(Element v,Element w){
     list<Element> result;
     NodoVertice<Element>*inicio=NULL,*destino=NULL,*act;
-    map<NodoVertice<Element>*,bool> visitados;
+    unordered_map<NodoVertice<Element>*,bool> visitados;
     float costo=0;
     if(!g)
         return result;  //si el grafo es vacio no existe camino
@@ -1553,7 +1553,7 @@ template <typename Element>
 float Grafo<Element>::getCostoCaminoDijkstra(Element v,Element w){
     list<Element> result;
     NodoVertice<Element>*inicio=NULL,*destino=NULL,*act;
-    map<NodoVertice<Element>*,bool> visitados;
+    unordered_map<NodoVertice<Element>*,bool> visitados;
     float costo=0;
     if(!g)
         return costo;  //si el grafo es vacio no existe camino
@@ -1582,10 +1582,10 @@ float Grafo<Element>::getCostoCaminoDijkstra(Element v,Element w){
 }
 
 template <typename Element>
-void Grafo<Element>::caminoDijkstra(NodoVertice<Element>* inicio, NodoVertice<Element>* destino, map<NodoVertice<Element>*, bool> &visitados, list<Element> &result, float &costo){
+void Grafo<Element>::caminoDijkstra(NodoVertice<Element>* inicio, NodoVertice<Element>* destino, unordered_map<NodoVertice<Element>*, bool> &visitados, list<Element> &result, float &costo){
     priority_queue<pair<float,NodoVertice<Element>*>, vector<pair<float,NodoVertice<Element>*>>, greater<pair<float,NodoVertice<Element>*>>> cola; //cola de prioridad que guarda pares de (peso,vertice)
-    map<NodoVertice<Element>*,float> distancias;      //mapa que guarda las distancias minimas desde el vertice inicial a cada vertice
-    map<NodoVertice<Element>*,NodoVertice<Element>*> recorrido; //mapa que obtiene los arcos que generan un recorrido de v a w
+    unordered_map<NodoVertice<Element>*,float> distancias;      //mapa que guarda las distancias minimas desde el vertice inicial a cada vertice
+    unordered_map<NodoVertice<Element>*,NodoVertice<Element>*> recorrido; //mapa que obtiene los arcos que generan un recorrido de v a w
     NodoVertice<Element>* act;          //iterador de vertices
     NodoArco<Element>*arcoAct;          //iterador de arcos
     bool found=false;                   //bandera que indica si se encontro el vertice w   
