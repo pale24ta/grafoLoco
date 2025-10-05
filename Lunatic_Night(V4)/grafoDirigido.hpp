@@ -4,7 +4,7 @@
 #include "nodoGrafo.hpp"
 #include <iostream>
 #include <unordered_map>
-#include <unordered_map>
+#include <map>
 #include <set>
 #include <algorithm>
 #include <list>
@@ -40,6 +40,7 @@ class Grafo{
         void esBipartito(NodoVertice<Element> *inicio, unordered_map<NodoVertice<Element>*,bool> &visitados, unordered_map<NodoVertice<Element>*,int> &colores, bool &respuesta);    // Indica si el grafo puede ser bipartito
         void getCamino(unordered_map<NodoVertice<Element>*,bool> &visitados,NodoVertice<Element>* v,NodoVertice<Element>* w,unordered_map<NodoVertice<Element>*,NodoVertice<Element>*> &recorrido);//procedimiento auxiliar para allar el camino mas corto entre dos vertices
         list<Element> getCamino(unordered_map<NodoVertice<Element>*,NodoVertice<Element>*> &recorrido,NodoVertice<Element>* v,NodoVertice<Element>* w);//retorna una lista con el camino de v a w
+        void caminoDijkstra(NodoVertice<Element>* inicio, NodoVertice<Element>* destino, map<NodoVertice<Element>*, bool> &visitados, list<Element> &result, float &costo);
 
     private:
         NodoVertice<Element> *getVerticeInicia(){return g;}
@@ -105,7 +106,9 @@ class Grafo{
 
         // Inclusion de Jesus Munoz
         list<Element> getCaminoMasCorto(Element inicio, Element fin);   // Busca el camino mas corto entre dos vertices (grafos Sin ponderacion)
-        
+        list<Element> getCaminoDijkstra(Element v, Element w); //Obtiene el camino mas corto entre dos vertices (Grafo con ponderacion positiva)
+        float getCostoCaminoDijkstra(Element v, Element w); //Obtiene el costo del camino mas corto entre dos vertices (Grafo con ponderacion positiva)
+
         //Operadores
         bool operator==(const Grafo<Element> &grafo);                        //compara dos grafos y retorna verdadero en caso de ser iguales
         bool operator!=(const Grafo<Element> &grafo){return !(*this == grafo);}//compara dos grafos y retorna verdadero en caso de ser digerentes
@@ -1514,6 +1517,113 @@ list<Element> Grafo<Element>::getCamino(unordered_map<NodoVertice<Element>*,Nodo
     return result;
 }
 
+template <typename Element>
+list<Element> Grafo<Element>::getCaminoDijkstra(Element v,Element w){
+    list<Element> result;
+    NodoVertice<Element>*inicio=NULL,*destino=NULL,*act;
+    map<NodoVertice<Element>*,bool> visitados;
+    float costo=0;
+    if(!g)
+        return result;  //si el grafo es vacio no existe camino
+    if(v==w){
+        result.push_front(v);   //si ambos vertices son el mismo, se retorna un lista con un solo elemento (el inicio es el final)
+        return result;
+    }
+
+    act=g;
+    //ciclo que llena el mapa de visitados y busca los nodos que contienes los elementos v y w
+    while (act)
+    {
+        visitados[act]=false;
+        if(act->getInfo() == v)
+            inicio=act;
+        if(act->getInfo() == w)
+            destino=act;
+        act=act->getProximoNodo();
+    }
+    //si alguno de los dos elementos no se encuentra en el grafo, no existe camino entre ellos
+    if(!inicio || !destino)
+        return result;
+
+    caminoDijkstra(inicio,destino,visitados,result,costo);
+    
+    return result;
+}
+template <typename Element>
+float Grafo<Element>::getCostoCaminoDijkstra(Element v,Element w){
+    list<Element> result;
+    NodoVertice<Element>*inicio=NULL,*destino=NULL,*act;
+    map<NodoVertice<Element>*,bool> visitados;
+    float costo=0;
+    if(!g)
+        return costo;  //si el grafo es vacio no existe camino
+    if(v==w){
+        return costo;
+    }
+
+    act=g;
+    //ciclo que llena el mapa de visitados y busca los nodos que contienes los elementos v y w
+    while (act)
+    {
+        visitados[act]=false;
+        if(act->getInfo() == v)
+            inicio=act;
+        if(act->getInfo() == w)
+            destino=act;
+        act=act->getProximoNodo();
+    }
+    //si alguno de los dos elementos no se encuentra en el grafo, no existe camino entre ellos
+    if(!inicio || !destino)
+        return costo;
+
+    caminoDijkstra(inicio,destino,visitados,result,costo);
+    
+    return costo;
+}
+
+template <typename Element>
+void Grafo<Element>::caminoDijkstra(NodoVertice<Element>* inicio, NodoVertice<Element>* destino, map<NodoVertice<Element>*, bool> &visitados, list<Element> &result, float &costo){
+    priority_queue<pair<float,NodoVertice<Element>*>, vector<pair<float,NodoVertice<Element>*>>, greater<pair<float,NodoVertice<Element>*>>> cola; //cola de prioridad que guarda pares de (peso,vertice)
+    map<NodoVertice<Element>*,float> distancias;      //mapa que guarda las distancias minimas desde el vertice inicial a cada vertice
+    map<NodoVertice<Element>*,NodoVertice<Element>*> recorrido; //mapa que obtiene los arcos que generan un recorrido de v a w
+    NodoVertice<Element>* act;          //iterador de vertices
+    NodoArco<Element>*arcoAct;          //iterador de arcos
+    bool found=false;                   //bandera que indica si se encontro el vertice w   
+
+    act=inicio;
+
+    cola.push(make_pair(0,act)); //inserta el vertice inicial en la cola con peso 0
+    distancias[act]=0;           //la distancia del vertice inicial a si mismo es 0
+
+    while(!cola.empty() && !found){
+
+        act=cola.top().second;  // toma el vertice con menor peso
+        cola.pop();
+
+        if(!visitados[act]){
+            visitados[act]=true;    //marca el vertice como visitado
+
+            if(act==destino)        //si se encontro el vertice destino se sale de los ciclos
+                found=true;
+
+            arcoAct=act->getListaAdyacencia();  //busca los sucesores
+            while (arcoAct && !found)
+            {
+                if (!visitados[arcoAct->getInfo()])   //si el vertice no ha sido visitado
+                {
+                    distancias[arcoAct->getInfo()]=distancias[act]+arcoAct->getPeso(); //actualiza la distancia del vertice sucesor
+                    recorrido[arcoAct->getInfo()]=act;  //guarda el vertice en el mapa sucesor:predecesor
+                    cola.push(make_pair(distancias[arcoAct->getInfo()],arcoAct->getInfo())); //inserta el vertice en la cola con su distancia
+                }
+                arcoAct=arcoAct->getProximoNodo();
+            }
+        }
+    }
+    if(found){    //si se encontro el vertice destino, se crea el camino
+        result = getCamino(recorrido,inicio,destino);
+        costo = distancias[destino];   
+    }
+}
 #endif
 
 
