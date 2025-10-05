@@ -56,8 +56,9 @@ void GrafoNoDirigido<Element>::agregarArco(Element v, Element w, float c){
     if(this->existeArco(v,w) && this->existeArco(w,v)) return;
     // Para esta union de arcos, hay que hacer tal que v -> w y w -> v
 
+    
     NodoVertice<Element>*vertV,*vertW,*ultPos;
-    if (!this->g)
+    if (!this->g)   //si el grafo esta vacio, entonces incertas ambaos vertices
     {
         vertV= new NodoVertice<Element>(v);
         vertW= new NodoVertice<Element>(w);
@@ -65,123 +66,50 @@ void GrafoNoDirigido<Element>::agregarArco(Element v, Element w, float c){
         vertV->setProximoNodo(vertW);
         this->nVertices=2;
     }else{
-            vertV=getPosElement(v);
+        //se busca los vertices en el grafo, si no existen, entonces se incertan al final
+            vertV=getPosElement(v); //busca la posicion del vertice
         if(!vertV){
-            ultPos=getUltimaPos();
-            vertV= new NodoVertice<Element>(v);
-            ultPos->setProximoNodo(vertV);
-            this->nVertices++;
+            ultPos=getUltimaPos();  //busca el ultimo vertice del grafo
+            vertV= new NodoVertice<Element>(v); //crea el vertice v
+            ultPos->setProximoNodo(vertV);      //inserta el vertice al final
+            this->nVertices++;                  //aumenta el numero de vertices
         }
         vertW=getPosElement(w);
         if(!vertW){
-            ultPos=getUltimaPos();
-            vertW= new NodoVertice<Element>(w);
-            ultPos->setProximoNodo(vertW);
-            this->nVertices++;
+            ultPos=getUltimaPos();              //busca el ultimo vertice del grafo
+            vertW= new NodoVertice<Element>(w); //crea el vertice v
+            ultPos->setProximoNodo(vertW);      //inserta el vertice al final
+            this->nVertices++;                  //aumenta el numero de vertices
         }
     }
     
     
-
+    //en el primer ciclo crea e inserta el arco v -> w y en el segundo de w -> v
     for (int i = 0; i < 2; i++)
     {
         NodoArco<Element>*nuevoArco,*arcoAnt;
         NodoVertice<Element> *vertA,*vertB;
         switch (i)
         {
-        case 0:
-            vertA=vertV;
+        case 0: //se crea un arco de v -> w
+            vertA=vertV;    
             vertB=vertW;
             break;
         
-        default:
+        default://w -> v
             vertA=vertW;
             vertB=vertV;
             break;
         }
+        //inserta el arco en el primer lugar de la lista de adyacencia
         arcoAnt= vertA->getListaAdyacencia();
-        nuevoArco= new NodoArco<Element>(vertB);
-        nuevoArco->setPeso(c);
-        nuevoArco->setProximoNodo(arcoAnt);
-        vertA->setListaAdyacencia(nuevoArco);
+        nuevoArco= new NodoArco<Element>(vertB);//se crea el vertice
+        nuevoArco->setPeso(c);                  //le asigna el peso del arco
+        nuevoArco->setProximoNodo(arcoAnt);     //apunta a la primera posicion
+        vertA->setListaAdyacencia(nuevoArco);   //inserta el arco en el primer lugar de la lista de adyacencia
     }
     
     this->mArcos++;
-
-
-    /*NodoVertice<Element> *iterVerticeA = this->g, *iterVerticeB = NULL;
-    NodoArco<Element> *nuevoArco = NULL;
-    Element aux;
-
-    // El primer paso seria encontrar v o w en el grafo, utilizarems iterVerticeA para ello
-
-    while(iterVerticeA && !(iterVerticeA->getInfo() == v || iterVerticeA->getInfo() == w))
-        iterVerticeA = iterVerticeA->getProximoNodo();
-
-    // en caso de no haber encontrado la vertice v o w, hay que crearla
-    if(!iterVerticeA){
-        iterVerticeA = new NodoVertice<Element>(v);   // Este vertice sera v
-        
-        NodoVertice<Element> *aux = this->g;
-        while(aux && aux->getProximoNodo())
-            aux =  aux->getProximoNodo();
-
-        if(aux){
-            aux->setProximoNodo(iterVerticeA);
-        }else{
-            iterVerticeA->setProximoNodo(this->g);
-            this->g = iterVerticeA;
-        }
-    
-        //mapeamos el vertice
-        // this->mapaDeGrafo[v] = this->nVertices;
-        this->nVertices += 1;
-    }
-
-    aux = iterVerticeA->getInfo();  // guardamos el dato para diferenciarlo con el siguiente
-
-    // iterador b iniciara al inicio tambien
-    iterVerticeB = this->g;
-
-    // mientras el puntero no sea null, el iterador no sea ni v ni w ni tampoco el dato anterior capturado en iterVerticeA
-    while(iterVerticeB && (!(iterVerticeB->getInfo() == v || iterVerticeB->getInfo() == w) || iterVerticeB->getInfo() == aux))
-        iterVerticeB = iterVerticeB->getProximoNodo();
-    
-    // igual caso si no se encontro la otra vertice se crea
-    if(!iterVerticeB){
-        NodoVertice<Element> *iterAux = this->g;
-
-        // dependiendo del vertice anterior creada/encontrada/ se crea con el dato del opuesto
-        Element e = (aux == w)? v : w;
-
-        iterVerticeB = new NodoVertice<Element>(e);
-
-        // insertamos al final del grafo
-        while(iterAux && iterAux->getProximoNodo())
-            iterAux = iterAux->getProximoNodo();
-
-        if(iterAux){
-            iterAux->setProximoNodo(iterVerticeB);
-        }else{
-            iterVerticeB->setProximoNodo(this->g);
-            this->g = iterVerticeB;
-        }
-
-        // lo mapeamos tambien 
-        // this->mapaDeGrafo[e] = this->nVertices;
-        this->nVertices += 1;
-    }
-
-    // una ves encontrado las dos vertices, ahora creamos un arco que apunte de
-    // v -> w
-
-    nuevoArco = new NodoArco<Element>(iterVerticeB,c,iterVerticeA->getListaAdyacencia());
-    iterVerticeA->setListaAdyacencia(nuevoArco);
-
-    // w -> v
-    nuevoArco = new NodoArco<Element>(iterVerticeA,c,iterVerticeB->getListaAdyacencia());
-    iterVerticeB->setListaAdyacencia(nuevoArco);
-    this->mArcos += 1;*/
 }
 
 template<typename Element>

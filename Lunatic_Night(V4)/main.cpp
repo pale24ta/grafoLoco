@@ -32,24 +32,40 @@ int main(){
     //g2.agregarVertice('Z');
     Grafo<int> gMap=g.getMapGrafo();
     GrafoNoDirigido<int> ngMap=ng.getMapGrafo();
-
+    //PRUEBA DE ARCOS Y VERTICES
+////////////////////////////////////////////////////////////////////////////////////////////////
     cout<<"VERTICES "<<endl;
-    cout<<"Dirigido: ";
+    cout<<"Dirigido: "<<g.getPeso();
     list<char> vertices=g.getVertices();
     for (auto &&i : vertices)
     {
         cout<<i<<" ";
     }
     cout<<endl;
-    cout<<"Mapa: ";
-    list<int> verticesMap=gMap.getVertices();
-    for (auto &&i : verticesMap)
-    {
-        cout<<i<<" ";
-    }
-    cout<<endl;
 
-    cout<<"NO Dirigido: ";
+
+    for (auto &&i : vertices)
+    {
+        cout<<"Recorrido DFC desde "<<i<<": ";
+        list<char> recorrdio =g.DFS(i);
+        for (auto &&j : recorrdio)
+        {
+            cout<<j<<" ";
+        }
+        cout<<endl;
+
+        cout<<"Recorrido BFC desde "<<i<<": ";
+        recorrdio =g.BFS(i);
+        for (auto &&j : recorrdio)
+        {
+            cout<<j<<" ";
+        }
+        cout<<endl;
+        cout<<endl;
+    }
+
+
+    cout<<"NO Dirigido: "<<ng.getPeso();
     vertices=ng.getVertices();
     for (auto &&i : vertices)
     {
@@ -57,16 +73,31 @@ int main(){
     }
     cout<<endl;
 
-    cout<<"Mapa: ";
-    verticesMap=ngMap.getVertices();
-    for (auto &&i : verticesMap)
+    for (auto &&i : vertices)
     {
-        cout<<i<<" ";
-    }
-    cout<<endl;
+        cout<<"Recorrido DFC desde "<<i<<": ";
+        list<char> recorrdio =ng.DFS(i);
+        for (auto &&j : recorrdio)
+        {
+            cout<<j<<" ";
+        }
+        cout<<endl;
 
-    cout<<"ARCOS"<<endl;
-    cout<<"Dirigidos: "<<g.getMArcos()<<" arcos"<<endl;
+        cout<<"Recorrido BFC desde "<<i<<": ";
+        recorrdio =ng.BFS(i);
+        for (auto &&j : recorrdio)
+        {
+            cout<<j<<" ";
+        }
+
+        cout<<endl;
+        cout<<endl;
+    }
+
+
+
+    /*cout<<"ARCOS"<<endl;
+    cout<<"Dirigidos: "<<g.getMArcos()<<" arcos y su peso es "<<g.getPeso()<<endl;
     list<list<char>> arcos;
     list<list<int>> arcosMap;
 
@@ -82,21 +113,9 @@ int main(){
         }
         cout<<") = "<<g.getPesoArco(v,w)<<endl;
     }
-    cout<<"Mapeado: "<<gMap.getMArcos()<<" arcos"<<endl;
-    arcosMap=gMap.getArcos();
-    for (auto &&i : arcosMap)
-    {
-        float v=i.front();
-        float w=i.back();
-        cout<<"( ";
-        for (auto &&j : i)
-        {
-            cout<<j<<" ";
-        }
-        cout<<") = "<<gMap.getPesoArco(v,w)<<endl;
-    }
 
-    cout<<"No Dirigidos"<<ng.getMArcos()<<" arcos"<<endl;
+
+    cout<<"No Dirigidos"<<ng.getMArcos()<<" arcos"<<ng.getPeso()<<endl;
     arcos=ng.getArcos();
     for (auto &&i : arcos)
     {
@@ -107,20 +126,12 @@ int main(){
         {
             cout<<j<<" ";
         }
-        cout<<") = "<<g.getPesoArco(v,w)<<endl;
-    }
-    cout<<"Mapeado:"<<ngMap.getMArcos()<<" arcos"<<endl;
-    arcosMap=ngMap.getArcos();
-    for (auto &&i : arcosMap)
-    {
-        float v=i.front();
-        float w=i.back();
-        cout<<"( ";
-        for (auto &&j : i)
-        {
-            cout<<j<<" ";
-        }
-        cout<<") = "<<ngMap.getPesoArco(v,w)<<endl;
-    }
+        cout<<") = "<<ng.getPesoArco(v,w)<<endl;
+    }*/
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //SUCESORES
+
+
     return 0;
 }

@@ -93,15 +93,17 @@ class Grafo{
         list<list<Element>> getCompConexas();      //retorna una lista de listas de componentes conexas
         int getNumCompConexas();                   //retorna el numero de componentes conexas que posee el grafo
         static unordered_map<int, list<int> > mapearDiccionario(unordered_map<Element, list<Element> > diccionario, unordered_map<Element,int> &mapaComp);    // Metodo funcion que servira para mapear diccionarios y que tenga facil acceso a la hora de procesarlos
-        bool esConexo();
+        //bool esConexo();
+        
         list<list<Element>> getPuentes();           // Busca todos los arcos que actuan como puerte del grafo, son aquellos que, si se eliminan, el grafo pasa a ser disconexo
         bool esBipartito();                         // Indica si el grafo puede ser bipartito
         int getGradoVertice(Element v);             // Obtiene el grado de una vertice v
-        // Inclusion de Jesus Munoz
-        list<Element> getCaminoMasCorto(Element inicio, Element fin);   // Busca el camino mas corto entre dos vertices (grafos Sin ponderacion)
         float getPeso();                              //Obtiene la sumatoria de los pesos del Grafo
         list<Element> getCamino(Element v,Element w);//Obtiene el camino mas corto entre dos vertices (Si no existe camino retorna una lista vacia)
 
+        // Inclusion de Jesus Munoz
+        list<Element> getCaminoMasCorto(Element inicio, Element fin);   // Busca el camino mas corto entre dos vertices (grafos Sin ponderacion)
+        
         //Operadores
         bool operator==(const Grafo<Element> &grafo);                        //compara dos grafos y retorna verdadero en caso de ser iguales
         bool operator!=(const Grafo<Element> &grafo){return !(*this == grafo);}//compara dos grafos y retorna verdadero en caso de ser digerentes
@@ -859,15 +861,8 @@ int Grafo<Element>::getGradoEntrada(Element v){
     int grado=0;
     bool found=false;
 
-    act=g;
-    //verifica que exista el vertice
-    while (act && act->getInfo()!= v)
-    {
-        act=act->getProximoNodo();
-    }
-
     
-    if (act)
+    if (existeVertice(v))
     {
         act=g;          //si exite, recorre desde el primer nodo en busca de los vertices que lo apunten
         while (act)
@@ -876,7 +871,7 @@ int Grafo<Element>::getGradoEntrada(Element v){
             {
                 found=false;
                 arcoAct=act->getListaAdyacencia();
-                while (arcoAct && found)
+                while (arcoAct && !found)
                 {
                     if (arcoAct->getInfo()->getInfo() == v)     //si un vertice lo apunta, suma 1 y se sale del ciclo
                     {
