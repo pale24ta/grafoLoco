@@ -40,6 +40,7 @@ class Grafo{
         void esBipartito(NodoVertice<Element> *inicio, unordered_map<NodoVertice<Element>*,bool> &visitados, unordered_map<NodoVertice<Element>*,int> &colores, bool &respuesta);    // Indica si el grafo puede ser bipartito
         void getCamino(unordered_map<NodoVertice<Element>*,bool> &visitados,NodoVertice<Element>* v,NodoVertice<Element>* w,unordered_map<NodoVertice<Element>*,NodoVertice<Element>*> &recorrido);//procedimiento auxiliar para allar el camino mas corto entre dos vertices
         list<Element> getCamino(unordered_map<NodoVertice<Element>*,NodoVertice<Element>*> &recorrido,NodoVertice<Element>* v,NodoVertice<Element>* w);//retorna una lista con el camino de v a w
+
     private:
         NodoVertice<Element> *getVerticeInicia(){return g;}
         
@@ -1512,7 +1513,6 @@ list<Element> Grafo<Element>::getCamino(unordered_map<NodoVertice<Element>*,Nodo
     result.push_front(act->getInfo());
     return result;
 }
-
 
 #endif
 

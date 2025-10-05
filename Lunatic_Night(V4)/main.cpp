@@ -30,6 +30,7 @@ int main(){
     }
     //g.agregarVertice('W');
     //g2.agregarVertice('Z');
+    
     Grafo<int> gMap=g.getMapGrafo();
     GrafoNoDirigido<int> ngMap=ng.getMapGrafo();
     //PRUEBA DE ARCOS Y VERTICES
@@ -44,27 +45,6 @@ int main(){
     cout<<endl;
 
 
-    for (auto &&i : vertices)
-    {
-        cout<<"Recorrido DFC desde "<<i<<": ";
-        list<char> recorrdio =g.DFS(i);
-        for (auto &&j : recorrdio)
-        {
-            cout<<j<<" ";
-        }
-        cout<<endl;
-
-        cout<<"Recorrido BFC desde "<<i<<": ";
-        recorrdio =g.BFS(i);
-        for (auto &&j : recorrdio)
-        {
-            cout<<j<<" ";
-        }
-        cout<<endl;
-        cout<<endl;
-    }
-
-
     cout<<"NO Dirigido: "<<ng.getPeso();
     vertices=ng.getVertices();
     for (auto &&i : vertices)
@@ -75,24 +55,25 @@ int main(){
 
     for (auto &&i : vertices)
     {
-        cout<<"Recorrido DFC desde "<<i<<": ";
-        list<char> recorrdio =ng.DFS(i);
-        for (auto &&j : recorrdio)
+        cout<<"Camino A -> "<<i<<endl;
+        cout<<"DIRIGIDO: ";
+        list<char> camino=g.getCamino('A',i);
+        for (auto &&j : camino)
         {
             cout<<j<<" ";
         }
         cout<<endl;
 
-        cout<<"Recorrido BFC desde "<<i<<": ";
-        recorrdio =ng.BFS(i);
-        for (auto &&j : recorrdio)
+        cout<<"NO DIRIGIDO: ";
+        camino=ng.getCamino('A',i);
+        for (auto &&j : camino)
         {
             cout<<j<<" ";
         }
-
-        cout<<endl;
-        cout<<endl;
+        cout<<endl<<endl;
     }
+
+
 
 
 
@@ -135,39 +116,6 @@ int main(){
     // Lista de arcos
 
     // dirigido
-
-    for(list<char> pares : g.getArcos()){
-        char x = pares.front();
-        char y = pares.back();
-        cout<<"(";
-        for(char i : pares){
-            cout<<i<<" ";
-        }
-        cout<<")";
-
-        // su peso
-        cout<<"="<<g.getPesoArco(x,y)<<endl;
-    }
-
-    cout<<"Total ="<<g.getPeso()<<endl;
-
-
-    // No dirigido
-    
-    for(list<char> pares : ng.getArcos()){
-        char x = pares.front();
-        char y = pares.back();
-        cout<<"(";
-        for(char i : pares){
-            cout<<i<<" ";
-        }
-        cout<<")";
-
-        // su peso
-        cout<<"="<<ng.getPesoArco(x,y)<<endl;
-    }
-
-    cout<<"Total ="<<ng.getPeso()<<endl;
 
 
 
