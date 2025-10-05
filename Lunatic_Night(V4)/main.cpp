@@ -14,213 +14,110 @@ list<int> caminoMasCortoIntermedio(GrafoNoDirigido<int> &g, int a, int b, int in
 
 int main(){
 
-    GrafoNoDirigido<char> ng;
+    GrafoNoDirigido<char> ng,ng2;
     Grafo<char> g,g2;
+
     char v,w;
     int i=0;
-    float coste=9;
+    //float coste=9;
     while (cin>> v >> w)
     {
         i++;
         g.agregarArco(v,w,i);
         ng.agregarArco(v,w,i);
+        //ng.agregarArco(w,v,i);
         //g2.agregarArco(v,w,i);
     }
     //g.agregarVertice('W');
     //g2.agregarVertice('Z');
-    ng.agregarVertice('Z');
-    //g.vaciar();
-    //ng.vaciar();
-    coste=g.getPeso();
-    cout<<"Peso: "<<coste<<endl;
-    g2=g;
-    cout<<"Fuente: "<<g.getFuente()<<endl;
-    cout<< (g==g2? "Son Iguales":"No Son Iguales")<<endl;
-
-    cout<<"Grado de  salida de a: "<<g.getGradoSalida('A')<<endl;
-    cout<<"Grado de  entrada de a: "<<g.getGradoEntrada('A')<<endl;
-    cout<<"Tiene "<<g.getNVertices()<<" Vertives y "<<g.getMArcos()<<" Arcos."<<endl;
-
     
-    cout<<"Vertices: ";
-    list<char> vertices=g.getVertices();
-    for (char e : vertices)
-    {
-        cout<< e << ", ";
-    }
-    cout<<endl;
-
-    cout<<"Vertices2: ";
-    vertices=g2.getVertices();
-    for (char e : vertices)
-    {
-        cout<< e << ", ";
-    }
-    cout<<endl;
-
-    cout<<"Camino: ";
-    vertices=g.getCamino('E','J');
-    for (char e : vertices)
-    {
-        cout<< e << ", ";
-    }
-    cout<<endl;
-
-    cout<<"BFS: ";
-    vertices=g.BFS('A');
-    for (char e : vertices)
-    {
-        cout<< e << ", ";
-    }
-    cout<<endl;
-
-    cout<<"DFS: ";
-    vertices=g.DFS('A');
-    for (char e : vertices)
-    {
-        cout<< e << ", ";
-    }
-    cout<<endl;
-
-    
-    //mapeado
     Grafo<int> gMap=g.getMapGrafo();
-    list<int> mapa=gMap.getVertices();
-    cout<<"Mapa: ";
-    for (int e : mapa)
+    GrafoNoDirigido<int> ngMap=ng.getMapGrafo();
+    //PRUEBA DE ARCOS Y VERTICES
+////////////////////////////////////////////////////////////////////////////////////////////////
+    cout<<"VERTICES "<<endl;
+    cout<<"Dirigido: "<<g.getPeso();
+    list<char> vertices=g.getVertices();
+    for (auto &&i : vertices)
     {
-        cout<< e << ", ";
-    }
-    cout<<endl;
-    //Arcos sin mapear
-    list<list<char>> arcos=g.getArcos(),conexas=g.getCompConexas();
-    float peso;
-    char from,to;
-    for (list<char> par: arcos)
-    {
-        from=par.front();
-        to=par.back();
-        cout<<"(";
-        for (char e : par)
-        {
-            cout<<e<<" ";
-            
-        }
-        peso=g.getPesoArco(from,to);
-        cout<<")= "<<peso<<endl;
+        cout<<i<<" ";
     }
     cout<<endl;
 
-    g.getReverse();
-    arcos=g.getArcos();
-    for (list<char> par: arcos)
-    {
-        from=par.front();
-        to=par.back();
-        cout<<"(";
-        for (char e : par)
-        {
-            cout<<e<<" ";
-            
-        }
-        peso=g.getPesoArco(from,to);
-        cout<<")= "<<peso<<endl;
-    }
-    cout<<endl;
-    cout<<"Numero de componentes conexas: "<<g.getNumCompConexas()<<endl;
-    for (list<char> par: conexas)
-    {
-        cout<<"Comp: ";
-        for (char e : par)
-        {
-            cout<<e<<" ";
-            
-        }
-        cout<<endl;
-    }
-    cout<<endl;
 
-    //arcos mapeados
-    list<list<int>> arcosMap=gMap.getArcos(),compConexas=gMap.getCompConexas();
-    for (list<int> par: arcosMap)
-    {
-        cout<<"(";
-        for (int e : par)
-        {
-            cout<<e<<" ";
-        }
-        peso=gMap.getPesoArco(par.front(),par.back());
-        cout<<")= "<<peso<<endl;
-    }
-
-    for (list<int> par: compConexas)
-    {
-        cout<<"comp: ";
-        for (int e : par)
-        {
-            cout<<e<<" ";
-        }
-        cout<<endl;
-    }
-
-    //TEST Grafo no dirigido
-    cout<<" Su vertices =";
+    cout<<"NO Dirigido: "<<ng.getPeso();
     vertices=ng.getVertices();
-    for (char e : vertices)
+    for (auto &&i : vertices)
     {
-        cout<< e << ", ";
+        cout<<i<<" ";
     }
     cout<<endl;
 
-    list<char> vecinos;
-    vecinos=ng.getSucesores('B');
-    for (char e : vecinos)
+    for (auto &&i : vertices)
     {
-        cout<<e<<" ";
-    }
-    cout<<endl<<"Componentes conexas: "<<ng.getNumCompConexas()<<endl;
-    arcos=ng.getArcos();
-    for (list<char> par: arcos)
-    {
-        from=par.front();
-        to=par.back();
-        cout<<"(";
-        for (char e : par)
+        cout<<"Camino A -> "<<i<<endl;
+        cout<<"DIRIGIDO: ";
+        list<char> camino=g.getCamino('A',i);
+        for (auto &&j : camino)
         {
-            cout<<e<<" ";
-            
-        }
-        peso=ng.getPesoArco(from,to);
-        cout<<")= "<<peso<<endl;
-    }
-    cout<<endl;
-    conexas=ng.getCompConexas();
-    for (list<char> par: conexas)
-    {
-        cout<<"Comp";
-        for (char e : par)
-        {
-            cout<<e<<" ";
-            
+            cout<<j<<" ";
         }
         cout<<endl;
-    }
-    cout<<endl;
 
-    // Probando el getPuentes
-
-    cout<<"[";
-    for(list<char> n : g.getPuentes()){
-        cout<<"[";
-        for(char m : n){
-            cout<< m << ",";
+        cout<<"NO DIRIGIDO: ";
+        camino=ng.getCamino('A',i);
+        for (auto &&j : camino)
+        {
+            cout<<j<<" ";
         }
-        cout<<"]";
+        cout<<endl<<endl;
     }
-    cout<<"]";
 
-    // Mostrar si es bipartito
-    if(ng.esBipartito()) cout<<"EsBipartirto";
-    else cout<< "no es Bipartito";
+
+
+
+
+    /*cout<<"ARCOS"<<endl;
+    cout<<"Dirigidos: "<<g.getMArcos()<<" arcos y su peso es "<<g.getPeso()<<endl;
+    list<list<char>> arcos;
+    list<list<int>> arcosMap;
+
+    arcos=g.getArcos();
+    for (auto &&i : arcos)
+    {
+        float v=i.front();
+        float w=i.back();
+        cout<<"( ";
+        for (auto &&j : i)
+        {
+            cout<<j<<" ";
+        }
+        cout<<") = "<<g.getPesoArco(v,w)<<endl;
+    }
+
+
+    cout<<"No Dirigidos"<<ng.getMArcos()<<" arcos"<<ng.getPeso()<<endl;
+    arcos=ng.getArcos();
+    for (auto &&i : arcos)
+    {
+        float v=i.front();
+        float w=i.back();
+        cout<<"( ";
+        for (auto &&j : i)
+        {
+            cout<<j<<" ";
+        }
+        cout<<") = "<<ng.getPesoArco(v,w)<<endl;
+    }*/
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //SUCESORES
+
+    // Lista de arcos
+
+    // dirigido
+
+
+
     return 0;
 }

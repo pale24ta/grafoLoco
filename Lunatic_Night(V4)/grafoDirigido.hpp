@@ -4,7 +4,7 @@
 #include "nodoGrafo.hpp"
 #include <iostream>
 #include <unordered_map>
-#include <unordered_map>
+#include <map>
 #include <set>
 #include <algorithm>
 #include <list>
@@ -40,6 +40,8 @@ class Grafo{
         void esBipartito(NodoVertice<Element> *inicio, unordered_map<NodoVertice<Element>*,bool> &visitados, unordered_map<NodoVertice<Element>*,int> &colores, bool &respuesta);    // Indica si el grafo puede ser bipartito
         void getCamino(unordered_map<NodoVertice<Element>*,bool> &visitados,NodoVertice<Element>* v,NodoVertice<Element>* w,unordered_map<NodoVertice<Element>*,NodoVertice<Element>*> &recorrido);//procedimiento auxiliar para allar el camino mas corto entre dos vertices
         list<Element> getCamino(unordered_map<NodoVertice<Element>*,NodoVertice<Element>*> &recorrido,NodoVertice<Element>* v,NodoVertice<Element>* w);//retorna una lista con el camino de v a w
+        void caminoDijkstra(NodoVertice<Element>* inicio, NodoVertice<Element>* destino, unordered_map<NodoVertice<Element>*, bool> &visitados, list<Element> &result, float &costo);
+
     private:
         NodoVertice<Element> *getVerticeInicia(){return g;}
         
@@ -80,7 +82,8 @@ class Grafo{
         list<Element> getVertices();                        // O(n)retorna una lista con los vertices del grafo
 
         //Otros
-        void getReverse();      // Metodo para invertir los arcos de un grafo(Valido para grafo Dirigido)
+        // nota: getReverse() se vuelve abstracta, ya que en la hija vamos a privatisarla
+        virtual void getReverse();      // Metodo para invertir los arcos de un grafo(Valido para grafo Dirigido)
         void vaciar();          // Vacia el grafo existente
         bool esVacio();         // Metodo logico si el grafo no tiene nodos // O(1) porque solo se verifica los atributos nVertices
         bool existeVertice(Element v);    // Buscar el elemento en la lista de vertices, la lista en casos generales se encontrara desgetNVerticesada, asi que la forma mas viables es iterar en ella, O(n)
@@ -93,14 +96,18 @@ class Grafo{
         list<list<Element>> getCompConexas();      //retorna una lista de listas de componentes conexas
         int getNumCompConexas();                   //retorna el numero de componentes conexas que posee el grafo
         static unordered_map<int, list<int> > mapearDiccionario(unordered_map<Element, list<Element> > diccionario, unordered_map<Element,int> &mapaComp);    // Metodo funcion que servira para mapear diccionarios y que tenga facil acceso a la hora de procesarlos
-        bool esConexo();
+        //bool esConexo();
+        
         list<list<Element>> getPuentes();           // Busca todos los arcos que actuan como puerte del grafo, son aquellos que, si se eliminan, el grafo pasa a ser disconexo
         bool esBipartito();                         // Indica si el grafo puede ser bipartito
         int getGradoVertice(Element v);             // Obtiene el grado de una vertice v
+        virtual float getPeso();                              //Obtiene la sumatoria de los pesos del Grafo
+        list<Element> getCamino(Element v,Element w);//Obtiene el camino mas corto entre dos vertices (Si no existe camino retorna una lista vacia)
+
         // Inclusion de Jesus Munoz
         list<Element> getCaminoMasCorto(Element inicio, Element fin);   // Busca el camino mas corto entre dos vertices (grafos Sin ponderacion)
-        float getPeso();                              //Obtiene la sumatoria de los pesos del Grafo
-        list<Element> getCamino(Element v,Element w);//Obtiene el camino mas corto entre dos vertices (Si no existe camino retorna una lista vacia)
+        list<Element> getCaminoDijkstra(Element v, Element w); //Obtiene el camino mas corto entre dos vertices (Grafo con ponderacion positiva)
+        float getCostoCaminoDijkstra(Element v, Element w); //Obtiene el costo del camino mas corto entre dos vertices (Grafo con ponderacion positiva)
 
         //Operadores
         bool operator==(const Grafo<Element> &grafo);                        //compara dos grafos y retorna verdadero en caso de ser iguales
@@ -170,7 +177,7 @@ template <typename Element>
 inline bool Grafo<Element>::verificarExistenciaElementoEnCola(queue<Element> cola, Element info)
 {
     while(!cola.empty()){
-        if(cola.front() = info)
+        if(cola.front() == info)
             return true;
 
         cola.pop();
@@ -260,16 +267,15 @@ void Grafo<Element>::agregarVertice(Element v)
     NodoVertice<Element> *nuevoVertice = new NodoVertice<Element>(v);   // Creamos el nodo asignando memoria
     NodoVertice<Element> *ant=g;
 
-    while(ant && ant->getProximoNodo()){
-        ant = ant->getProximoNodo();
-    }
-
     if(ant){
         // en caso de estar en la ultima vertice de la lista
+        while(ant && ant->getProximoNodo()){
+        ant = ant->getProximoNodo();
+        }
         ant->setProximoNodo(nuevoVertice);
     }else{
         // caso contrario, osea que seria un grafo vacio inicialmente
-        nuevoVertice->setProximoNodo(g);
+        nuevoVertice->setProximoNodo(NULL);
         g = nuevoVertice;
     }
 
@@ -583,7 +589,7 @@ inline bool Grafo<Element>::existeArco(Element v, Element w)
 template <typename Element>
 float Grafo<Element>::getPesoArco(Element v, Element w)  // Encontrar el peso del arco existente de V -> W
 {
-    if(!g)  return false;   // Grafo vacio
+    if(!g)  return 0.0;   // Grafo vacio
 
     // Puntero para iterar vertice y nodo Adyacencia
     NodoVertice<Element> *iterVer = g;
@@ -789,7 +795,7 @@ Grafo<int> Grafo<Element>::getMapGrafo(){
         adyAct=act->getListaAdyacencia();
         while (adyAct)  //recorre todos los arcos de los vertices
         {
-            grafo.agregarArco(mapa[act],mapa[adyAct->getInfo()],this->getPesoArco(act->getInfo(),adyAct->getInfo()->getInfo()));    //crea el arco mapeado
+            grafo.agregarArco(mapa[act],mapa[adyAct->getInfo()],adyAct->getPeso());    //crea el arco mapeado
             adyAct=adyAct->getProximoNodo();
         }
         act=act->getProximoNodo();
@@ -860,15 +866,8 @@ int Grafo<Element>::getGradoEntrada(Element v){
     int grado=0;
     bool found=false;
 
-    act=g;
-    //verifica que exista el vertice
-    while (act && act->getInfo()!= v)
-    {
-        act=act->getProximoNodo();
-    }
-
     
-    if (act)
+    if (existeVertice(v))
     {
         act=g;          //si exite, recorre desde el primer nodo en busca de los vertices que lo apunten
         while (act)
@@ -877,7 +876,7 @@ int Grafo<Element>::getGradoEntrada(Element v){
             {
                 found=false;
                 arcoAct=act->getListaAdyacencia();
-                while (arcoAct && found)
+                while (arcoAct && !found)
                 {
                     if (arcoAct->getInfo()->getInfo() == v)     //si un vertice lo apunta, suma 1 y se sale del ciclo
                     {
@@ -1516,6 +1515,114 @@ list<Element> Grafo<Element>::getCamino(unordered_map<NodoVertice<Element>*,Nodo
     }
     result.push_front(act->getInfo());
     return result;
+}
+
+template <typename Element>
+list<Element> Grafo<Element>::getCaminoDijkstra(Element v,Element w){
+    list<Element> result;
+    NodoVertice<Element>*inicio=NULL,*destino=NULL,*act;
+    unordered_map<NodoVertice<Element>*,bool> visitados;
+    float costo=0;
+    if(!g)
+        return result;  //si el grafo es vacio no existe camino
+    if(v==w){
+        result.push_front(v);   //si ambos vertices son el mismo, se retorna un lista con un solo elemento (el inicio es el final)
+        return result;
+    }
+
+    act=g;
+    //ciclo que llena el mapa de visitados y busca los nodos que contienes los elementos v y w
+    while (act)
+    {
+        visitados[act]=false;
+        if(act->getInfo() == v)
+            inicio=act;
+        if(act->getInfo() == w)
+            destino=act;
+        act=act->getProximoNodo();
+    }
+    //si alguno de los dos elementos no se encuentra en el grafo, no existe camino entre ellos
+    if(!inicio || !destino)
+        return result;
+
+    caminoDijkstra(inicio,destino,visitados,result,costo);
+    
+    return result;
+}
+template <typename Element>
+float Grafo<Element>::getCostoCaminoDijkstra(Element v,Element w){
+    list<Element> result;
+    NodoVertice<Element>*inicio=NULL,*destino=NULL,*act;
+    unordered_map<NodoVertice<Element>*,bool> visitados;
+    float costo=0;
+    if(!g)
+        return costo;  //si el grafo es vacio no existe camino
+    if(v==w){
+        return costo;
+    }
+
+    act=g;
+    //ciclo que llena el mapa de visitados y busca los nodos que contienes los elementos v y w
+    while (act)
+    {
+        visitados[act]=false;
+        if(act->getInfo() == v)
+            inicio=act;
+        if(act->getInfo() == w)
+            destino=act;
+        act=act->getProximoNodo();
+    }
+    //si alguno de los dos elementos no se encuentra en el grafo, no existe camino entre ellos
+    if(!inicio || !destino)
+        return costo;
+
+    caminoDijkstra(inicio,destino,visitados,result,costo);
+    
+    return costo;
+}
+
+template <typename Element>
+void Grafo<Element>::caminoDijkstra(NodoVertice<Element>* inicio, NodoVertice<Element>* destino, unordered_map<NodoVertice<Element>*, bool> &visitados, list<Element> &result, float &costo){
+    priority_queue<pair<float,NodoVertice<Element>*>, vector<pair<float,NodoVertice<Element>*>>, greater<pair<float,NodoVertice<Element>*>>> cola; //cola de prioridad que guarda pares de (peso,vertice)
+    unordered_map<NodoVertice<Element>*,float> distancias;      //mapa que guarda las distancias minimas desde el vertice inicial a cada vertice
+    unordered_map<NodoVertice<Element>*,NodoVertice<Element>*> recorrido; //mapa que obtiene los arcos que generan un recorrido de v a w
+    NodoVertice<Element>* act;          //iterador de vertices
+    NodoArco<Element>*arcoAct;          //iterador de arcos
+    bool found=false;                   //bandera que indica si se encontro el vertice w   
+
+    act=inicio;
+
+    cola.push(make_pair(0,act)); //inserta el vertice inicial en la cola con peso 0
+    distancias[act]=0;           //la distancia del vertice inicial a si mismo es 0
+
+    while(!cola.empty() && !found){
+
+        act=cola.top().second;  // toma el vertice con menor peso
+        cola.pop();
+
+        if(!visitados[act]){
+            visitados[act]=true;    //marca el vertice como visitado
+
+            if(act==destino)        //si se encontro el vertice destino se sale de los ciclos
+                found=true;
+
+            arcoAct=act->getListaAdyacencia();  //busca los sucesores
+            while (arcoAct && !found)
+            {
+                if (!visitados[arcoAct->getInfo()])   //si el vertice no ha sido visitado
+                {
+                    distancias[arcoAct->getInfo()]=distancias[act]+arcoAct->getPeso(); //actualiza la distancia del vertice sucesor
+                    recorrido[arcoAct->getInfo()]=act;  //guarda el vertice en el mapa sucesor:predecesor
+                    cola.push(make_pair(distancias[arcoAct->getInfo()],arcoAct->getInfo())); //inserta el vertice en la cola con su distancia
+                }
+                arcoAct=arcoAct->getProximoNodo();
+            }
+        }
+    }
+    if(found){    //si se encontro el vertice destino, se crea el camino
+        result = getCamino(recorrido,inicio,destino);
+        costo = distancias[destino];   
+    }
 }
 #endif
 
