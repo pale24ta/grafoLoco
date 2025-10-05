@@ -80,7 +80,8 @@ class Grafo{
         list<Element> getVertices();                        // O(n)retorna una lista con los vertices del grafo
 
         //Otros
-        void getReverse();      // Metodo para invertir los arcos de un grafo(Valido para grafo Dirigido)
+        // nota: getReverse() se vuelve abstracta, ya que en la hija vamos a privatisarla
+        virtual void getReverse();      // Metodo para invertir los arcos de un grafo(Valido para grafo Dirigido)
         void vaciar();          // Vacia el grafo existente
         bool esVacio();         // Metodo logico si el grafo no tiene nodos // O(1) porque solo se verifica los atributos nVertices
         bool existeVertice(Element v);    // Buscar el elemento en la lista de vertices, la lista en casos generales se encontrara desgetNVerticesada, asi que la forma mas viables es iterar en ella, O(n)
@@ -98,7 +99,7 @@ class Grafo{
         list<list<Element>> getPuentes();           // Busca todos los arcos que actuan como puerte del grafo, son aquellos que, si se eliminan, el grafo pasa a ser disconexo
         bool esBipartito();                         // Indica si el grafo puede ser bipartito
         int getGradoVertice(Element v);             // Obtiene el grado de una vertice v
-        float getPeso();                              //Obtiene la sumatoria de los pesos del Grafo
+        virtual float getPeso();                              //Obtiene la sumatoria de los pesos del Grafo
         list<Element> getCamino(Element v,Element w);//Obtiene el camino mas corto entre dos vertices (Si no existe camino retorna una lista vacia)
 
         // Inclusion de Jesus Munoz

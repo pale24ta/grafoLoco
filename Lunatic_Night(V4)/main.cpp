@@ -132,6 +132,44 @@ int main(){
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
     //SUCESORES
 
+    // Lista de arcos
+
+    // dirigido
+
+    for(list<char> pares : g.getArcos()){
+        char x = pares.front();
+        char y = pares.back();
+        cout<<"(";
+        for(char i : pares){
+            cout<<i<<" ";
+        }
+        cout<<")";
+
+        // su peso
+        cout<<"="<<g.getPesoArco(x,y)<<endl;
+    }
+
+    cout<<"Total ="<<g.getPeso()<<endl;
+
+
+    // No dirigido
+    
+    for(list<char> pares : ng.getArcos()){
+        char x = pares.front();
+        char y = pares.back();
+        cout<<"(";
+        for(char i : pares){
+            cout<<i<<" ";
+        }
+        cout<<")";
+
+        // su peso
+        cout<<"="<<ng.getPesoArco(x,y)<<endl;
+    }
+
+    cout<<"Total ="<<ng.getPeso()<<endl;
+
+
 
     return 0;
 }

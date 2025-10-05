@@ -22,7 +22,7 @@ class GrafoNoDirigido : public Grafo<Element>{
     private:
         NodoVertice<Element>* getPosElement(Element v); //retrona un puntero a la posicion del elemento
         NodoVertice<Element>* getUltimaPos();   //retorna el ultimo nodo insertado
-
+        void getReverse();  // Metodo bloqueado para esta clase
     public:
         GrafoNoDirigido();
         GrafoNoDirigido(const GrafoNoDirigido &target);
@@ -33,8 +33,19 @@ class GrafoNoDirigido : public Grafo<Element>{
         void eliminarArco(Element v,Element w);     // Eliminar el arco es buscar el vertice inicial y luego el vertice correspondiente O(n + m)
         GrafoNoDirigido<int> getMapGrafo(); //retorna un el mismo grafo con valores mapeados
         list<list<Element> > getArcos();    // Devuelve la lista de arcos del grafo
-        
+        float getPeso();
 };
+
+template <typename Element>
+float GrafoNoDirigido<Element>::getPeso(){
+    return Grafo<Element>::getPeso()/2;
+}
+
+template<typename Element>
+void GrafoNoDirigido<Element>::getReverse(){
+    Grafo<Element>::getReverse();
+}
+
 template <typename Element>
 GrafoNoDirigido<Element>::GrafoNoDirigido(): Grafo<Element>(){}
 
